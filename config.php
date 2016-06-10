@@ -25,8 +25,8 @@ $simple_products_categories=array(446,844,845,846,849,850);
 $max_num_products_needed=550;
 $num_products_per_page=50;
 //-------------testing------------
-// $max_num_products_needed=1;
-// $num_products_per_page=2;
+$max_num_products_needed=1;
+$num_products_per_page=2;
 
 // $magmi_csv_folder="/usr/share/nginx/www/ipzmall.com/alice/magmi_csv/";
 // $root_dir="/usr/share/nginx/www/ipzmall.com/alice/datafeedr_updater/";

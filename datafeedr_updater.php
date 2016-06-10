@@ -337,7 +337,7 @@ class datafeedr_updater{
 				$num_rows=$result[0]['num_rows'];
 				if ($num_rows<30){
 					echo "\nERROR, there are only $num_rows rows in step 2 table, abort this category. \n";
-					return -1;
+					// return -1;
 				}
 			}
 			//--from step 2 table, generate magmi csv, then call magmi to import---

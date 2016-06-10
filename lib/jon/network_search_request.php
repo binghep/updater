@@ -1,4 +1,7 @@
 <?php
+
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+
 // http://ems.1661hk.com/wp-content/plugins/datafeedr-api/libraries/full_example.php
 // http://ems.1661hk.com/productExport-test/datafeedr_api.php
 // https://v4.datafeedr.com/documentation/136
@@ -8,9 +11,10 @@
 
 
 
-
+require __DIR__.'/../../config.php';
 require '/usr/share/nginx/www/ipzmall.com/wp/wp-content/plugins/datafeedr-api/libraries/datafeedr.php';
-$api=new DatafeedrApi( 'uqzonmoujxgycslwwg9c', 'IAgLDmR00vwERMpewaALXOkvKGcpXHEFHTl0nxLGDScUGimhmgRkoILoIFc97geu' );
+
+$api=new DatafeedrApi( $datafeedr_id, $datafeedr_key );
 
 // $networks = $api->getNetworks( array( 270 ) );
 $networks = $api->getNetworks();
