@@ -1,0 +1,160 @@
+<?php
+
+class backcountry_scrapper{
+	protected $domXpath;
+	public $dropdown_type;//"size" or "style & size"
+	public $error;
+	function __construct($bc_url){//or encode($url)
+		if (empty($bc_url)){
+	        echo 'not valid param. Exiting...';
+	        return -1;
+	    }
+	    var_dump($bc_url);
+	    // $bc_url=urldecode($bc_url);
+
+	    $scraped_website = $this->curl($bc_url);  // Executing our curl function to scrape the webpage http://www.example.com and return the results into the $scraped_website variable
+	    $dom_doc = new DOMDocument;
+        libxml_use_internal_errors(true);
+	    $dom_doc->loadHTML($scraped_website);//or loadHTMLFile(...html)
+        libxml_use_internal_errors(false);
+	    $this->domXpath = new DomXPath($dom_doc);
+
+		
+		// var_dump($scraped_website);return;
+	    // $pos1=strpos($scraped_website, '<div id="ui-accordion-accordion-parent-panel-0"');
+	    // var_dump($pos1);
+	    // $removed_before=substr($scraped_website,$pos1);
+	    // var_dump($removed_before);
+	    return 1;
+	}
+	function getData(){
+		$this->dropdown_type="size";
+		$sizeArray=$this->scrapeSizeArray();
+		if ($sizeArray==-1){
+			// echo '"size" drop down does not exist on this page. Scrapping "styles&size" drop down instead';
+			$this->dropdown_type="style and size";
+			$sizeArray=$this->scrapeStyleAndSizeArray();
+			if ($sizeArray==-1){//exit
+				$scrapped['error']="fail to find either 'size' or 'style and size' drop down. ";
+				$scrapped['dropdown_type']=$this->dropdown_type;
+				return $scrapped;
+			}
+		}
+		$scrapped['dropdown_type']=$this->dropdown_type;
+		$scrapped['sizeArray']=$sizeArray;//this is the one found on backcountry product page. (either size dropdown or 'style & size' dropdown)
+		$scrapped['imageArray']=$this->scrapeImageArray();
+		// $scrapped['short_desc']=$this->scrapeShortDesc();
+		return $scrapped;
+	}
+	/*
+	output: array of option texts under "size" dropdown
+	if can't find specified xpath element: return -1;
+	*/
+	function scrapeSizeArray(){
+		echo 'scrapping Size Array...<br>';
+		// $elements = $xpath->query("*/div[@id='yourTagIdHere']");
+		$xpath_selector="//*[contains(@class, 'js-size-dropdown__option')]/span";
+	    $dropdown_options =$this->getDomNodeValues($xpath_selector);//an array or -1
+		return $dropdown_options;
+	}
+	/*
+	output: array of option texts under "style & size" dropdown
+	if can't find specified xpath element: return -1;
+	*/
+	function scrapeStyleAndSizeArray(){
+		echo 'scrapping Style and Size Array...<br>';
+		$xpath_selector=".//li[contains(@class, 'buybox-dropdown__option')]/div[2]/span";
+	  	$dropdown_options =$this->getDomNodeValues($xpath_selector);
+		return $dropdown_options;
+	}
+	/*
+		get array for product images nav dots matching each element in the backcountry "style & size" dropdown--------1 to 1 relationship between these two arrays
+	*/
+	function scrapeImageArray(){
+		$img_elements=".//div/ul/li/img[contains(@class,'js-attribute-dropdown__option')]";
+	    $imageArray =$this->getDomNode_Image_attribute($img_elements);
+		return $imageArray;
+	}
+
+	private function getDomDivHTML($xpath_selector){
+
+		$div_node = $this->domXpath->query($xpath_selector);
+		// var_dump($div_node);
+		if ($div_node->length==0){
+			echo 'element not found in DOM<br>';
+			return -1;
+		}else{
+			// var_dump($div_node);
+			// return;
+			$children  = $div_node->childNodes;
+			var_dump($children);
+		    foreach ($children as $child) 
+		    { 
+		        // $innerHTML .= $element->ownerDocument->saveHTML($child);
+		    	echo $child->nodeName;
+		    }
+			// var_dump($this->DOMinnerHTML($div_node));
+			// var_dump($div_node);
+			// return $htmlString;
+		}
+	}
+
+
+
+	/*
+		input: all options nodes (inner most) for the 'size' or 'styles or size' dropdown. (the xpath_selector matches all options text node in the dropdown)
+		output: the array containing all options texts under backcountry dropdown.
+		on error:  if can't find, return -1.
+	*/
+	private function getDomNodeValues($xpath_selector){
+		$elements = $this->domXpath->query($xpath_selector);
+		$values=array();
+		if ($elements->length==0){
+			return -1;
+		}else{
+			foreach ($elements as $element) {
+			// echo "<br/>[". $element->nodeName. "]";
+				$nodes = $element->childNodes;
+				foreach ($nodes as $node) {
+				  	// echo $node->nodeValue. "\n";
+					array_push($values, $node->nodeValue);
+				}
+			}
+			return $values;
+		}
+	}
+	/*
+		output: the array containing all image urls on backcountry product view page. when you open the page full screen, the dots under image slider has a one-to-one relationship with the options.
+
+		e.g. http://www.backcountry.com/honey-stinger-organic-energy-gels-24-pack?skid=HON0012-ACA-ONESIZ&ti=UExQIENhdDpOdXRyaXRpb246MToxNTpjYXQxMDAyMDc3MTU=
+
+		on error:  if can't find, return -1.
+	*/
+	private  function getDomNode_Image_attribute($xpath_selector){
+		$elements = $this->domXpath->query($xpath_selector);
+		$values=array();
+		if ($elements->length==0){
+			echo 'images not found in DOM<br>';
+			return -1;
+		}else{
+			foreach ($elements as $element) {
+				// echo "<br/>[". $element->nodeName. "]";
+				// echo "<br/>[". $element->getAttribute('data-large-img'). "]";
+				array_push($values, 'http:'.$element->getAttribute('data-large-img'));
+			}
+			return $values;
+		}
+	}
+    // Defining the basic cURL function    
+    private function curl($url) {
+        $ch = curl_init();  // Initialising cURL
+        curl_setopt($ch, CURLOPT_URL, $url);    // Setting cURL's URL option with the $url variable passed into the function
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE); // Setting cURL's option to return the webpage data
+        $data = curl_exec($ch); // Executing the cURL request and assigning the returned data to the $data variable
+        curl_close($ch);    // Closing cURL
+        return $data;   // Returning the data from the function
+    }
+
+
+}
+?>
