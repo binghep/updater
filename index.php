@@ -14,13 +14,13 @@ require __DIR__.'/config.php';
 require __DIR__.'/database/dbcontroller.php';
 $db_handle=new DBController();	
 
-$_GET['category_id']=697;
+// $_GET['category_id']=697;
 // $_GET['category_id']=846;
 
 // $category_id=702;
 // $this_event_id=do_one_category_only($category_id,$db_handle);
-// $this_event_id=61;
-// disable_obsolete_products_and_reindex($this_event_id,$db_handle);
+
+// disable_obsolete_products_and_reindex($db_handle,"lala");
 // return;
 
 $do_one_category_only=(isset($_GET['category_id'])&&is_numeric($_GET['category_id']))?$_GET['category_id']:null;

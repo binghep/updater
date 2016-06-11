@@ -29,11 +29,11 @@ class category_product_iterator{
 		$productCollection = Mage::getResourceModel('reports/product_collection')
 			// ->addAttributeToSelect('*')
 			->addAttributeToSelect('sku')
-			// ->addAttributeToSelect('is_datafeedr_product')
+			->addAttributeToSelect('is_datafeedr_product')
 			->addAttributeToSelect('status')
 			->addAttributeToFilter('is_datafeedr_product','1')
 			->addAttributeToFilter('status','1')//enabled
-			// ->addAttributeToFilter('visibility',4)
+			->addAttributeToFilter('visibility',4)
 			->addCategoryFilter($category);
 		$all_skus=array();
 		foreach ($productCollection as $product) {

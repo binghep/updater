@@ -32,6 +32,27 @@ class generate_csv_from_step2_table{
 		//fclose($this->fp);
 	}
 
+	// function write_log($object)
+	// {  
+	//     require 'config.php';
+	//     // error_log($object."\r\n", 3, 'drink_mix.csv');
+	//  	error_log($object."\r\n", 3, $output_csv_name);
+	//     return true;
+	// }
+	// write_log(""\""admin,cn,en\"",\""$sku\"",\""-$small_image\"""");
+
+
+	//Pull sizes from Merchant
+	//param is already decoded.
+	//var_dump($productUrl);  http://www.backcountry.com/nuun-all-day-8-pack?CMP_SKU=NUU0015
+	// function getBackCountryDataArray($productUrl){
+		
+	//     require_once("lib/getBackcountryProductSize_api.php");
+	//     $backcountry_scrapper=new backcountry_scrapper($productUrl);
+	//     $data =$backcountry_scrapper->getData();
+	//     // var_dump($data);
+	//     return $data;
+	// }
 	function removeCommaInPrice($price){
 	    $new_price=str_replace(",", "", $price);
 	    return $new_price;
@@ -64,9 +85,10 @@ class generate_csv_from_step2_table{
 	    
 	        $this->fp = fopen($file_path, 'w');//append to file in magento root.
 	        //create csv first line header.
-	        $which="Size:drop_down:1:1";
+	        // $which="Size:drop_down:1:1";
+	        $which="size";
 	        // $which="style_and_size";
-	        $this->log("store,type,sku,$which,weight,sizes,name,category_ids,brand,image_external_url,small_image_external_url,thumbnail_external_url,use_external_images,special_price,price,short_description,description,tax_class_id,attribute_set,visibility,status,qty,is_datafeedr_product,datafeedr_merchant,datafeedr_buy_link,url_for_scrapping");
+	        $this->log("store,type,sku,$which,weight,configurable_attributes,name,category_ids,brand,image_external_url,small_image_external_url,thumbnail_external_url,use_external_images,special_price,price,short_description,description,tax_class_id,attribute_set,visibility,status,qty,is_datafeedr_product,datafeedr_merchant,datafeedr_buy_link,url_for_scrapping");
 	        // write_log("store,type,sku,$which,weight,configurable_attributes,name,category_ids,brands,image_external_url,small_image_external_url,thumbnail_external_url,use_external_images,special_price,price,short_description,description,tax_class_id,attribute_set,visibility,status,manage_stock");
 	        
 	        $debug=false;
@@ -93,7 +115,7 @@ class generate_csv_from_step2_table{
 	            	continue;
 	            }
 	            //------passed validation------------
-            	$this->output_one_row_for_one_conf($one_row,$scrapped_attributes);
+            	$this->ouput_all_rows_for_one_conf($one_row,$scrapped_attributes);
 	            if ($debug) {break;}
 			}
 		}
@@ -113,15 +135,13 @@ class generate_csv_from_step2_table{
 		$custom_option="";
 		$i=0;
 		$base_price=null;
-		$base_saleprice=null;
+		$base_special_price=null;
 		foreach ($sizes as $size) {
 			$data=$array[$size];
 			$data=get_object_vars($data);
 			$base_price=$data['price'];
-			$base_saleprice=$data['saleprice'];
-			break;
+			$base_special_price=$data['saleprice'];
 		}
-		$sizes_for_filter=array();
 		foreach ($sizes as $size) {
 			$data=$array[$size];
 			$data=get_object_vars($data);//convert stdClass Object to array
@@ -134,17 +154,12 @@ class generate_csv_from_step2_table{
 			if (!empty($custom_option)){
 				$custom_option.="|";
 			}
-			$saleprice_offset=$data['saleprice']-$base_saleprice;
+			$special_price_offset=$data['special_price']-$base_special_price;
 			
-			$size=preg_replace("/[^A-Za-z0-9 .\-\/]/", "", $size);//only allow alphanumeric characters  .-\ and space
-			$size=trim($size);
-			//--------------------------------------------------
-			array_push($sizes_for_filter, $size);
-			//--------------------------------------------------
-			$custom_option.="{$size}:fixed:{$saleprice_offset}::{$i}";
-			$i++;
+			$size=preg_replace("/[^A-Za-z0-9]/", "", $size);//only allow alphanumeric characters
+			$custom_option.="{$size}:fixed:{$special_price_offset}::{$i}";
+			$i++;      	
     	}
-    	$sizes_for_filter=implode(",", $sizes_for_filter);
 
         //============now process and output=====================
 	    $conf_sku=$one_row['sku'];
@@ -159,7 +174,7 @@ class generate_csv_from_step2_table{
 	    $saleprice=$this->removeCommaInPrice($one_row['saleprice']);
 	    $price=$this->removeCommaInPrice($one_row['price']);
 
-	    // $size = '';
+	    $size = '';
 	  	//Check if image url is NULL
 	    if (is_null($image_url)||empty($image_url)){
 	    	echo 'error image url is null';
@@ -171,7 +186,7 @@ class generate_csv_from_step2_table{
 	    // $url_for_scrapping=;
 
 	    require __DIR__.'/../config.php';//$weight
-	    $log_row="admin,simple,\"{$conf_sku}\",{$custom_option},{$weight},\"{$sizes_for_filter}\",\"{$one_row["product_name"]}\",\"{$categories}\",{$brand},{$image_url},{$image_url},{$image_url},1,{$base_saleprice},{$base_price},\"{$desc}\",\"{$desc}\",2,Demo Attribute Set,4,1,5000,1,{$one_row['datafeedr_merchant']},{$one_row['datafeedr_buy_link']},{$one_row['url_for_scrapping']}";//stock not important for conf
+	    $log_row="admin,simple,\"{$conf_sku}\",{$custom_option},{$weight},\"{$one_row["product_name"]}\",\"{$categories}\",{$brand},{$image_url},{$image_url},{$image_url},1,{$base_special_price},{$base_price},\"{$desc}\",\"{$desc}\",0,Demo Attribute Set,4,1,5000,1,{$one_row['datafeedr_merchant']},{$one_row['datafeedr_buy_link']},{$one_row['url_for_scrapping']}";//stock not important for conf
 	 	// var_dump($log_row);
 	    // write_log($log_row);
 	    $this->log($log_row);
