@@ -58,6 +58,8 @@ if (!is_null($do_one_category_only)){
 		//-----------------(4)-----------------------
 		delete_all_disabled_datafeedr_product();
 			write_report("<div>(clean up step 4) Finished Deleting All obsolete products and their children.</div>",$file_name);
+		//-----------------(5)-----------------------
+		remove_old_csv();
 		$msg="Thanks for reading. My task is finished. Bye";
 		echo "\n$msg\n";
 			write_report("<div style='font-weight:bold;'>$msg</div>",$file_name);
@@ -67,6 +69,10 @@ if (!is_null($do_one_category_only)){
 			write_report("<div>$msg</div>",$file_name);
 	}
 	send_report_via_email($file_name);
+}
+
+function remove_old_csv(){
+	include __DIR__."/lib/remove_old_csv_files.php";
 }
 function send_report_via_email($file_name){
 	require '/usr/share/nginx/www/ipzmall.com/alice/PHPMailer/PHPMailer-5.2.14/send_email_api.php';
