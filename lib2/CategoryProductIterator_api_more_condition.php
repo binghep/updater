@@ -3,7 +3,7 @@
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 // header('Content-type: application/json');
 
-require_once '../../app/Mage.php';
+require_once __DIR__.'/../../../app/Mage.php';
 Mage::app()->setCurrentStore(Mage_Core_Model_App::ADMIN_STORE_ID);
 // require_once 'database/dbcontroller.php';
 
