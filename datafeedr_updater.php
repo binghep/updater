@@ -291,7 +291,10 @@ class datafeedr_updater{
 				echo "\n    $scrapped_attributes\n";
 				$query=null;
 				if ($datafeedr_merchant=="Backcountry.com"){
-					$scrapped_attributes=json_encode($scrapped_attributes);
+					$scrapped_attributes=json_encode($scrapped_attributes,JSON_FORCE_OBJECT);
+
+					//string(33) "[{"price":"120"},{"price":"100"}]"  (if not have JSON_FORCE_OBJECT) refer to lib/json_encode.php
+					//string(41) "{"0":{"price":"120"},"1":{"price":"100"}}"
 					$query="insert into {$mysql_table_step_2_scrapped_results} (cat_id,product_name,sku,product_desc,image_url,datafeedr_buy_link,price,saleprice,scrapped_attributes,brand,url_for_scrapping,datafeedr_merchant) values (\"{$row['cat_id']}\",\"{$row['product_name']}\",\"{$row['sku']}\",\"{$row['product_desc']}\",\"{$row['image_url']}\",\"$datafeedr_buy_link\",\"{$row['price']}\",\"{$row['saleprice']}\",\"$scrapped_attributes\",\"{$brand}\",\"$url\",\"$datafeedr_merchant\")";
 				}elseif($datafeedr_merchant=="NORDSTROM.com"){
 					//==============Remove ", Size xxx" in name===========
@@ -308,7 +311,7 @@ class datafeedr_updater{
 					$new_scrapped_attributes['child_attributes']=$scrapped_attributes['child_attributes'];
 
 					var_dump($new_scrapped_attributes);
-					$new_scrapped_attributes=json_encode($new_scrapped_attributes);
+					$new_scrapped_attributes=json_encode($new_scrapped_attributes,JSON_FORCE_OBJECT);
 					$query="insert into {$mysql_table_step_2_scrapped_results} (cat_id,product_name,sku,product_desc,image_url,datafeedr_buy_link,price,saleprice,scrapped_attributes,brand,url_for_scrapping,datafeedr_merchant) values (\"{$row['cat_id']}\",\"{$conf_product_name}\",\"{$row['sku']}\",\"{$row['product_desc']}\",\"{$scrapped_attributes['image']}\",\"$datafeedr_buy_link\",\"{$row['price']}\",\"{$row['saleprice']}\",\"$new_scrapped_attributes\",\"{$brand}\",\"{$real_url_to_scrape}\",\"$datafeedr_merchant\")";
 					// var_dump($query);
 					// return;
@@ -359,12 +362,12 @@ class datafeedr_updater{
 			//---------call product manager to generate images for all products in this category---------
 			$go_to_url=$product_manager_url."index.php?cat_id=".$this->magento_cat_id."&secret_path=yes";
 			// var_dump($go_to_url);
-			$this->curl($go_to_url);
-			sleep(10);
+		$this->curl($go_to_url);
+		sleep(10);
 			echo "\n-------finished curl product manager to generate images-------\n";
 			//-----------------------------------------------------------------
 			echo "\nRunning magmi to import csv for this category\n";
-			$this->run_magmi($output_csv_name);
+		$this->run_magmi($output_csv_name);
 			echo "\n-----------Done importing csv with magmi. Returning from datafeedr_updater->run() ---------\n";
 		}
 		$this->write_report("<td>Finished</td>");
