@@ -1,5 +1,5 @@
 <?php
-
+return;
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 // header('Content-type: application/json');
 echo '<html>';
