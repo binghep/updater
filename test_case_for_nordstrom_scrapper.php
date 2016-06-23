@@ -2,7 +2,7 @@
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 echo '<pre>';
 
-require 'lib/getNordstromProductSize_api.php';
+require 'lib/nordstrom_scrapper.php';
 //Note: url is the url_for_scrapping in step1 table. 
 // $url="http://shop.nordstrom.com/S/4247661?cm_mmc=Linkshare-_-datafeed-_-infant_unisex:baby_accessories:baby_furniture-_-5091901"; //Only has color option.
 // $url="http://shop.nordstrom.com/S/4237966?cm_mmc=Linkshare-_-datafeed-_-women:bottoms:pant-_-5084034";//Out of stock
@@ -26,7 +26,7 @@ if ($scrapped_attributes!==false && !empty($scrapped_attributes)){
 
 //==================================================
 /*
-require_once("lib/getNordstromProductSize_api.php");
+require_once("lib/nordstrom_scrapper.php");
 $scrapper=new nordstrom_scrapper($productUrl);
 if ($scrapper->init_status===false){
 	// die("cannot instantiate scrapper");

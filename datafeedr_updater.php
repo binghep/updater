@@ -379,24 +379,41 @@ class datafeedr_updater{
 	function scrape_attributes($datafeedr_merchant,$productUrl,$conf_sku){
 		echo ("\n----------scrape_attributes() function-----------\n");
 		if ($datafeedr_merchant=="Backcountry.com"){
-		    require_once(__DIR__."/lib/getBackcountryProductSize_api.php");
-		    $scrapper=new backcountry_scrapper($productUrl);
-			// var_dump($scrapper->php_object);	    
-			if ($scrapper->init_status===false){
-				echo "\n---Error in datafeedr_updater->scrape_attributes() function: cannot find JS block(e.g. Out of Stock)---\n";
+		    require_once(__DIR__."/lib/backcountry_scrapper_A.php");
+		    //-------------use scrapper A----------------------------
+		    $scrapper_A=new backcountry_scrapper_A($productUrl);
+		    if ($scrapper_A->init_status===true){
+		    	// $scrapped_attributes=$scrapper->getScrappedAttributes("BNC006F-BKMAR-S");
+				$scrapped_attributes=$scrapper_A->getScrappedAttributes($conf_sku);
+
+				if ($scrapped_attributes!==false){
+			   	 	return $scrapped_attributes;
+				}else{
+					echo "\n---Error in scrape_attributes() function: getScrappedAttributes() returned false---\n";
+					return false;
+				}
+		    }
+		    unset($scrapper_A);
+		    //----------A is not suitable for this page json structure, use scrapper B----------
+		    require_once(__DIR__."/lib/backcountry_scrapper_B.php");
+		    $scrapper_B=new backcountry_scrapper_B($productUrl);
+			// var_dump($scrapper->php_object);
+			if ($scrapper_B->init_status===true){
+		    	// $scrapped_attributes=$scrapper->getScrappedAttributes("BNC006F-BKMAR-S");
+				$scrapped_attributes=$scrapper_B->getScrappedAttributes($conf_sku);
+
+				if ($scrapped_attributes!==false){
+			   	 	return $scrapped_attributes;
+				}else{
+					echo "\n---Error in scrape_attributes() function: getScrappedAttributes() returned false---\n";
+					return false;
+				}
+		    }else{//neither A nor B works
+				echo "\n---Error in datafeedr_updater->scrape_attributes() function: cannot find JS block(e.g. Out of Stock) in neither A nor B scrapper---\n";
 				return false;//("cannot instantiate scrapper");
 			}
-			// $scrapped_attributes=$scrapper->getScrappedAttributes("BNC006F-BKMAR-S");
-			$scrapped_attributes=$scrapper->getScrappedAttributes($conf_sku);
-
-			if ($scrapped_attributes!==false){
-		   	 	return $scrapped_attributes;
-			}else{
-				echo "\n---Error in scrape_attributes() function: getScrappedAttributes() returned false---\n";
-				return false;
-			}
 		}elseif ($datafeedr_merchant=="NORDSTROM.com"){
-		    require_once(__DIR__."/lib/getNordstromProductSize_api.php");
+		    require_once(__DIR__."/lib/nordstrom_scrapper.php");
 			$scrapper=new nordstrom_scrapper($productUrl);
 			if ($scrapper->init_status===false){
 				// die("cannot instantiate scrapper");

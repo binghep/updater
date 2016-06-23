@@ -100,28 +100,6 @@ class generate_csv_from_step2_table{
 	    return $file_name;
 	}
 
-
-	/**
-	 * Param: $sizes contains all size of one product in one array
-	 * Returns matching set array if matches one sequence set, return NULL if not matching any sets.
-	 * e.g. product contains XS,S as sizes, return array("XS"=>0,"S"=>1,"M"=>2,"L"=>3,"XL"=>4)
-	 */ 
-	function get_matching_size_set($all_size_sets,$product_size_array){
-		foreach ($all_size_sets as $set) {
-			$is_in_set=true;
-			foreach ($product_size_array as $size) {
-				if (!array_key_exists($size, $set)){
-					echo $size," is in ",implode(",", $set);
-					$is_in_set=false;
-					break;
-				}
-			}
-			if ($is_in_set){
-				echo 'is in one set';
-				return $set;
-			}
-		}
-	}
 	/**
 	* STYLE_SIMPLE_WITH_CUSTOM_ATTRIBUTES
 	*/
@@ -136,7 +114,6 @@ class generate_csv_from_step2_table{
 		$i=0;
 		$base_price=null;
 		$base_saleprice=null;
-		//-------------use the first size's price ans saleprice as base product price and saleprice------
 		foreach ($sizes as $size) {
 			$data=$array[$size];
 			$data=get_object_vars($data);
@@ -145,92 +122,6 @@ class generate_csv_from_step2_table{
 			break;
 		}
 		$sizes_for_filter=array();
-		//-----------add sort if sizes from one product all belong to one of following sets---------------
-		$all_size_sets=array(
-					array(	
-							"XX-Small"=>0,
-							"X-Small"=>1,
-							"Small"=>2,
-							"Medium"=>3,
-							"Large"=>4,
-							"X-Large"=>5,
-							"XX-Large"=>6,
-
-							"XX-Small P"=>7,
-							"X-Small P"=>8,
-							"Small P"=>9,
-							"Medium P"=>10,
-							"Large P"=>11,
-							"X-Large P"=>12,
-							"XX_Large P"=>13,
-							"Petite P"=>14,
-
-							"1X"=>15,
-							"2X"=>16,
-							"3X"=>17,
-							),//set index: 0 //nordstrom
-
-					array(  "XS"=>0,
-							"S"=>1,
-							"M"=>2,
-							"L"=>3,
-							"XL"=>4,
-							"XXL"=>5,
-							"3XL"=>6,
-							),//set index: 1 //backcountry
-					array("00"=>1,
-						"0"=>2,
-						"2"=>3,
-						"4"=>4,
-						"6"=>5,
-						"8"=>6,
-						"10"=>7,
-						"12"=>8,
-						"14"=>9,
-						"16"=>10,
-						"18"=>11,
-
-						"00P"=>12,
-						"0P"=>13,
-						"2P"=>14,
-						"4P"=>15,
-						"6P"=>16,
-						"8P"=>17,
-						"10P"=>18,
-						"12P"=>19,
-						"14P"=>20,
-						"16P"=>21,
-						"18P"=>22,
-
-						"12W"=>23,
-						"14W"=>24,
-						"16W"=>25,
-						"18W"=>26,
-						"20W"=>27,
-						"22W"=>28,
-						"24W"=>29,
-
-						"14WP"=>30,
-						"16WP"=>31,
-						"18WP"=>32,
-						"20WP"=>33,
-						"22WP"=>34,
-						"24WP"=>35,  
-						)//nordstrom
-					,
-					array(
-						"US 2/UK 6"=>1,
-						"US 4/UK 8"=>2,
-						"US 6/UK 10"=>3,
-						"US 8/UK 12"=>4,
-						"US 10/UK 14"=>5,
-						"US 12/UK 16"=>6,
-						"US 14/UK 18"=>7,
-						"US 16/UK 20"=>8,
-						)
-				  );
-		$matching_set=$this->get_matching_size_set($all_size_sets,$sizes);
-		//----------------------build size custom option column---------------------------------
 		foreach ($sizes as $size) {
 			$data=$array[$size];
 			$data=get_object_vars($data);//convert stdClass Object to array
@@ -250,11 +141,6 @@ class generate_csv_from_step2_table{
 			//--------------------------------------------------
 			array_push($sizes_for_filter, $size);
 			//--------------------------------------------------
-			if ($matching_set!==null){
-				// var_dump($sizes_for_filter);
-				// var_dump($matching_set);
-				$i=$matching_set[$size];//XS is 0 for example.
-			}
 			$custom_option.="{$size}:fixed:{$saleprice_offset}::{$i}";
 			$i++;
     	}

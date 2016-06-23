@@ -14,7 +14,7 @@ require __DIR__.'/config.php';
 require __DIR__.'/database/dbcontroller.php';
 $db_handle=new DBController();	
 
-// $_GET['category_id']=672;
+// $_GET['category_id']=526;
 // $_GET['category_id']=846;
 
 // $category_id=702;

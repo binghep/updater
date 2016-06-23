@@ -1,5 +1,5 @@
 <?php
-require __DIR__.'/../lib/getNordstromProductSize_api.php';
+require __DIR__.'/../lib/nordstrom_scrapper.php';
 // use PHPUnit\Framework\TestCase;
 
 /**
