@@ -49,6 +49,12 @@ class nordstrom_scrapperTest extends PHPUnit_Framework_TestCase{
 		$scrapped_attributes=$a->getScrappedAttributes($conf_sku);
 		$this->assertFalse($scrapped_attributes);
 	}
+
+
+
+	public function testFour(){
+		
+	}
 }
 ?>
 

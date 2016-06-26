@@ -92,6 +92,17 @@ class backcountry_scrapperTest extends PHPUnit_Framework_TestCase{
 	// 	$scrapped_attributes=$a->getScrappedAttributes($conf_sku);
 	// 	$this->assertFalse($scrapped_attributes);
 	// }
+
+
+	// public function testFour_A(){//very few products are not passing scrapper. ignore it for now.
+	// 	$url="http://www.backcountry.com/mountain-hardwear-wicked-lite-t-shirt-long-sleeve-womens?CMP_SKU=MHW2602";
+	// 	$a=new backcountry_scrapper_A($url);//ONLY WORKS FOR SCRAPPER A
+	// 	$this->assertNotFalse($a->init_status);
+
+	// 	$conf_sku="SIC000R-BK";
+	// 	$scrapped_attributes=$a->getScrappedAttributes($conf_sku);
+	// 	$this->assertNotFalse($scrapped_attributes);
+	// }
 }
 ?>
 

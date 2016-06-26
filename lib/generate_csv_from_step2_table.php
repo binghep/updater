@@ -111,7 +111,7 @@ class generate_csv_from_step2_table{
 			$is_in_set=true;
 			foreach ($product_size_array as $size) {
 				if (!array_key_exists($size, $set)){
-					echo $size," is in ",implode(",", $set);
+					// echo $size," is not in ",implode(",", $set);
 					$is_in_set=false;
 					break;
 				}

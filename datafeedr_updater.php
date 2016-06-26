@@ -214,15 +214,15 @@ class datafeedr_updater{
 		if (in_array($this->magento_cat_id, $simple_products_categories)){
 			//=======================write report================================
 			$num_curr_visible_items=count($this->getCurrProductSkus());
-			$num_future_visible_items=null;
+			$num_rows_in_step_1_table=null;
 			$query="select COUNT(*) as num_rows from {$mysql_table_step_1_datafeedr_results};";
 			$result=$this->db_handle->runQuery($query);
 			if (is_null($result)){
-				$num_future_visible_items="NONE";
+				$num_rows_in_step_1_table="NONE";
 			}else{
-				$num_future_visible_items=$result[0]['num_rows'];
+				$num_rows_in_step_1_table=$result[0]['num_rows'];
 			}
-			$this->write_report("<td>".$num_curr_visible_items."</td><td>".$num_future_visible_items."</td>");
+			$this->write_report("<td>".$num_curr_visible_items."</td><td>".$num_rows_in_step_1_table."(in step 1 table)</td><td>N/A</td>");
 			//=======================finish writing==============================
 			//-----exporting csv from step 1 table then import using magmi-------
 			echo ("\n~~~~~~~~~~simple category~~~~~~~~~~~\n");
@@ -249,19 +249,6 @@ class datafeedr_updater{
 			$this->run_magmi($output_csv_name);			
 			
 		}else{
-			//=======================write report================================
-			$num_curr_visible_items=count($this->getCurrProductSkus());
-			$num_future_visible_items=null;
-			$query="select COUNT(*) as num_rows from {$mysql_table_step_2_scrapped_results};";
-			$result=$this->db_handle->runQuery($query);
-			if (is_null($result)){
-				$num_future_visible_items="NONE";
-			}else{
-				$num_future_visible_items=$result[0]['num_rows'];
-			}
-			$this->write_report("<td>".$num_curr_visible_items."</td><td>".$num_future_visible_items."(Before Scrapping)</td>");
-			//=======================finish writing==============================
-			// return;
 			//---------------------create step 2 table from step 1 table-------------
 			require_once __DIR__.'/database/dbcontroller.php';
 			$db_handle=new DBController();
@@ -272,12 +259,14 @@ class datafeedr_updater{
 			// var_dump($query);
 			$result=$db_handle->runQuery($query);
 			// var_dump($result);
+			$num_rows_in_step_1_table=count($result);
 			foreach ($result as $row) {
 				// var_dump($row);
 				$datafeedr_buy_link=$row['datafeedr_buy_link'];
 				$url=$row['url_for_scrapping'];
 				$datafeedr_merchant=$row['datafeedr_merchant'];
 				$brand=$row['brand'];//already Title Cased
+				echo "\nScrapping url:\n".$url;
 				$scrapped_attributes=$this->scrape_attributes($datafeedr_merchant, $url,$row['sku']);
 
 				if ($scrapped_attributes===false){
@@ -329,10 +318,19 @@ class datafeedr_updater{
 				// break;
 			}
 			//===========finished creating step 2 table from step 1 table==========
+			//=======================write report================================
+			$num_curr_visible_items=count($this->getCurrProductSkus());
+			$num_rows_in_step_2_table=null;
+			$query="select COUNT(*) as num_rows from {$mysql_table_step_2_scrapped_results};";
+			$result=$this->db_handle->runQuery($query);
+			if (is_null($result)){
+				$num_rows_in_step_2_table="NONE";
+			}else{
+				$num_rows_in_step_2_table=$result[0]['num_rows'];
+			}
+			$this->write_report("<td>".$num_curr_visible_items."(current visible)</td><td>".$num_rows_in_step_1_table."(in step 1 table)</td><td>".$num_rows_in_step_2_table."(in step 2 table)</td>");
+			//=======================finish writing==============================
 			//======safety check: if step 2 table is less than 70 rows, do not update. ======
-			// return;
-			$query="select COUNT(*) as num_rows from {$mysql_table_step_2_scrapped_results}";
-			$result=$db_handle->runQuery($query);
 			if (is_null($result)){
 				echo "\nERROR, no rows in step 2 table, abort this category. \n";
 				return -1;
@@ -340,10 +338,11 @@ class datafeedr_updater{
 				$num_rows=$result[0]['num_rows'];
 				if ($num_rows<30){
 					echo "\nERROR, there are only $num_rows rows in step 2 table, abort this category. \n";
+					$this->write_report("<td>less than 70 rows in step 2 table, should have aborted but did not.</td>");
 					// return -1;
 				}
 			}
-			//--from step 2 table, generate magmi csv, then call magmi to import---
+			//==========from step 2 table, generate magmi csv, then call magmi to import==========
 			echo ("\n~~~~~~~~~~configurable category~~~~~~~~~~~\n");
 			require_once __DIR__.'/lib/generate_csv_from_step2_table.php';
 			$a=new generate_csv_from_step2_table($this->magento_category_name);

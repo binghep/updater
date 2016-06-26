@@ -14,7 +14,7 @@ require __DIR__.'/config.php';
 require __DIR__.'/database/dbcontroller.php';
 $db_handle=new DBController();	
 
-// $_GET['category_id']=526;
+// $_GET['category_id']=826;
 // $_GET['category_id']=846;
 
 // $category_id=702;
@@ -319,7 +319,7 @@ function go_over_all($db_handle,$file_name){
 						</head>
 						<body>
 						<table>
-						<th>Date</th><th>Time</th><th>Cat Id</th><th>Cat Name</th><th># of Visible Datafeedr Products (before Update) </th><th>(After Update)</th><th>status</th><th>Num obsolete visible recorded in Database</th>",$file_name);
+						<th>Date</th><th>Time</th><th>Cat Id</th><th>Cat Name</th><th># of Visible Datafeedr Products (before Update) </th><th>In Step 1 Table</th><th>In Step 2 Table</th><th>status</th><th>Num obsolete visible recorded in Database</th>",$file_name);
 	
 	//===========================================================================
 	echo "\n========================Step 1: GO OVER ALL=====================\n";

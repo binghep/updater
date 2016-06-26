@@ -28,6 +28,10 @@ $num_products_per_page=50;
 // $max_num_products_needed=1;
 // $num_products_per_page=2;
 
+// $max_num_products_needed=20;
+// $num_products_per_page=10;
+
+
 // $magmi_csv_folder="/usr/share/nginx/www/ipzmall.com/alice/magmi_csv/";
 // $root_dir="/usr/share/nginx/www/ipzmall.com/alice/datafeedr_updater/";
 // ------------------------------------------------------------------
