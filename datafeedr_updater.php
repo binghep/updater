@@ -275,9 +275,9 @@ class datafeedr_updater{
 				}
 				var_dump($scrapped_attributes);
 
-				echo "\n    |--json encoded scrapped attributes:------\n";
+				// echo "\n    |--json encoded scrapped attributes:------\n";
 				// $scrapped_attributes=mysqli_escape_string($scrapped_attributes);
-				echo "\n    $scrapped_attributes\n";
+				// echo "\n    $scrapped_attributes\n";
 				$query=null;
 				if ($datafeedr_merchant=="Backcountry.com"){
 					$scrapped_attributes=json_encode($scrapped_attributes,JSON_FORCE_OBJECT);

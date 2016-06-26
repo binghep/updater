@@ -22,7 +22,7 @@ $mysql_table_step_2_scrapped_results="step_2_scrapped_results";
 // $simple_products_categories=array(444,559,446,844,845,846,849,850);
 $simple_products_categories=array(446,844,845,846,849,850);
 //-------------production------------
-$max_num_products_needed=550;
+$max_num_products_needed=600;
 $num_products_per_page=50;
 //-------------testing------------
 // $max_num_products_needed=1;
