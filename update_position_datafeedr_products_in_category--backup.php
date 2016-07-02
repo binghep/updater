@@ -8,8 +8,6 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 
 require __DIR__.'/config.php';
 require_once __DIR__.'/database/dbcontroller_with_changeDB.php'; 
-require_once __DIR__.'/../../app/Mage.php';
-Mage::app();	
 
 
 
@@ -25,25 +23,14 @@ foreach ($filter_strings as $key => $value) {
 	// //-----------------------------------------------------------
 	// display_status_for_products($cat_id);
 	update_position_datafeedr_products($cat_id);
-	//====================change the product's position in 2nd level category too==========================
-	$category = Mage::getModel('catalog/category')->load($cat_id);
-
-	// var_dump($category->getLevel());
-	if ($category->getLevel()==="3"){
-		$level_2_cat_id=$category->getParentCategory()->getId();
-		// var_dump($level_2_cat_id);
-		// break;
-		if (is_numeric($level_2_cat_id)) {
-			update_position_datafeedr_products($level_2_cat_id);
-		}
-	}
-	// break;
+	//break;
 }
 /*
 Any product with position 0 replace with 300
 */
 function update_position_datafeedr_products($cat_id){
 	require_once __DIR__.'/../../app/Mage.php';
+	Mage::app();	
 	
 	$newlinehtml = "<br>";
 	$newlinecommand = "\n";
@@ -60,7 +47,7 @@ function update_position_datafeedr_products($cat_id){
 
 	//-----------------------------------------
 	
-	// $api = Mage::getSingleton('catalog/category_api');
+	$api = Mage::getSingleton('catalog/category_api');
 	$position = 300;
 	$i = 0;
 	$product_ids = array();
@@ -73,8 +60,6 @@ function update_position_datafeedr_products($cat_id){
 	$string_product_ids = implode(",", $product_ids);
 	$db_handle=new DBController();	
 	$db_handle->changeDB("magento_ipzmall");
-
-	//-------------------------------------------
 	$query = "Update mgcatalog_category_product set position = " . $position . 
 	" where category_id = " . $categoryId . " and product_id in (" . $string_product_ids . ")";
 	//$query = "select 1 from mgcatalog_category_product";
@@ -86,4 +71,3 @@ function update_position_datafeedr_products($cat_id){
 		echo "Failed: Query Failed" .  $newlinecommand;
 	}
 }
-
