@@ -103,19 +103,6 @@ class backcountry_scrapperTest extends PHPUnit_Framework_TestCase{
 	// 	$scrapped_attributes=$a->getScrappedAttributes($conf_sku);
 	// 	$this->assertNotFalse($scrapped_attributes);
 	// }
-
-
-
-	public function testFix(){
-		$url="http://www.backcountry.com/patagonia-baggies-short-womens?CMP_SKU=PAT00RX";
-		$a=new backcountry_scrapper_A($url);//ONLY WORKS FOR SCRAPPER A
-		var_dump($a->init_status);
-		// $this->assertNotFalse($a->init_status);
-
-		$conf_sku="PAT00RX-SULYL";
-		$scrapped_attributes=$a->getScrappedAttributes($conf_sku);
-		var_dump($scrapped_attributes);
-	}
 }
 ?>
 
