@@ -11,19 +11,32 @@ class nordstrom_scrapper{
 	function __construct($nordstrom_url){//or encode($url)
 	    //=============Additional rerouting for nordstrom==============
 	    // var_dump($nordstrom_url);
-	    $nordstrom_url=$this->get_redirected_nordstrom_url($nordstrom_url);
-	    // var_dump("here");
-	    // var_dump($nordstrom_url);
+	    // $accept_both_manual_and_auto=true;
+	    $accept_both_manual_and_auto=false;
 	    //=============Finished Additional rerouting for nordstrom==============
-		if (empty($nordstrom_url)){
-	        echo 'param in construct function of backcountry scrapper does not have valid param. Exiting...';
-	        return false;
-	    }
-	    $this->real_url_to_scrape=$nordstrom_url;
-	    // var_dump($bc_url);
-	    // $bc_url=urldecode($bc_url);
+		if ($accept_both_manual_and_auto){//accept manual added nordstrom product url pasted from my brwoser bar
+		    $redirect_nordstrom_url=$this->get_redirected_nordstrom_url($nordstrom_url);
+		    if (!empty($redirect_nordstrom_url)) {//auto url
+				$this->real_url_to_scrape=$redirect_nordstrom_url;
+		    }else{//manually url
+		    	$this->real_url_to_scrape=$nordstrom_url;
+		    }
+			$this->initialize();
+		}else{//only accept auto url
+		    $nordstrom_url=$this->get_redirected_nordstrom_url($nordstrom_url);
+			if (empty($nordstrom_url)){
+		        echo 'param in construct function of nordstrom_scrapper does not have valid param. Exiting...';
+		    }else{
+			    $this->real_url_to_scrape=$nordstrom_url;
+			    // var_dump($bc_url);
+			    // $bc_url=urldecode($bc_url);
+			    $this->initialize();
+			}
+		}
+	}
 
-	    $scraped_website = $this->curl($nordstrom_url);  // Executing our curl function to scrape the webpage http://www.example.com and return the results into the $scraped_website variable
+	public function initialize(){
+		 $scraped_website = $this->curl($this->real_url_to_scrape);  // Executing our curl function to scrape the webpage http://www.example.com and return the results into the $scraped_website variable
 	    // echo (strlen($scraped_website));
 		//--------------get this js block---------------------------
 		 //<script>React.render(React.createElement(product_desktop, {"initialData":{"Model":{"StyleModel":{"Id":4149469,"Name":"'Lauren' Long Sleeve Shift Dress","Title":"Lush 'Lauren' Long Sleeve Shift Dress","Number":"5020927","Description":"<p>A stretch-knit shift dress features a 
@@ -47,7 +60,7 @@ class nordstrom_scrapper{
 	   	}
 	   	if ($pos1===false){
 	    	$this->init_status=false;
-	    	return false;
+	    	return;
 	    }
 		$removed_before=substr($scraped_website,$pos1);
 
@@ -64,7 +77,7 @@ class nordstrom_scrapper{
 	    // var_dump($pos2);
 	   	if ($pos2===false){
 	    	$this->init_status=false;
-	    	return false;
+	    	return;
 	    }
 	    $json_in_html=substr($removed_before, 0,$pos2);
 	    // $json_in_html=str_replace('\\"', '"', $json_in_html);
@@ -81,13 +94,11 @@ class nordstrom_scrapper{
 	    // var_dump($this->php_object);
 	    if ($this->php_object===null){
 	    	$this->init_status=false;
-	    	return false;
 	    }else{
 	    	// echo '<pre>';
 	    	// var_dump($this->php_object);
 	    	// echo '</pre>';
 	    	$this->init_status=true;
-	    	return true;
 	    }
 	}
 	/**
@@ -154,6 +165,7 @@ class nordstrom_scrapper{
 			// echo $e->getMessage();
 		//}
 		// return;
+		
 		$StyleModel=$this->php_object->initialData->Model->StyleModel;
 		// $StyleModel=$this->php_object;
 		// var_dump($StyleModel);
@@ -165,6 +177,8 @@ class nordstrom_scrapper{
 		}
 		//----------------------------------------------------------------
 		$original_price=$StyleModel->ChoiceGroups[0]->Price->OriginalPrice;
+		$current_price=$StyleModel->ChoiceGroups[0]->Price->CurrentPrice;
+		// var_dump($StyleModel->ChoiceGroups[0]->Price);
 		// return;
 		//-------------------get default color name and image------------
 		$default_color_product_image=$DefaultMedia->ImageMediaUri->Large;
@@ -181,7 +195,7 @@ class nordstrom_scrapper{
     	$default_color_2=$StyleModel->DefaultColor;
     	// var_dump($default_color_2);
     	if ($default_color!=$default_color_2){
-    		echo 'Their fault. default color does not match. exiting. ';
+    		echo 'Error: Their fault. default color does not match. exiting. \n';
     		return;
     	}
     	//--------------get all simple products belonging to this color------
@@ -192,9 +206,20 @@ class nordstrom_scrapper{
     		if ($simple_object->Color==$default_color && $simple_object->IsAvailable===true){
     			// var_dump($simple_object->Size);
     			if (is_null($simple_object->Size)){continue;}//only has color, no size
+    			// echo ($simple_object->Price." - ".$simple_object->OriginalPrice."\n");//2nd one is 0 for some reason:$31.90 - 0
+    			$price=$this->removeDollarSign($original_price);
+    			$saleprice=$this->removeDollarSign($simple_object->Price);//is zero for 1 product
+    			if ($saleprice==0){
+	    			$saleprice=$this->removeDollarSign($current_price);
+    			}
+
+    			//--------------log abnormal-------------------
+    			if ($price==0 || $saleprice==0){
+    				echo "Error: Some logic error in scrapper causing some price to be zero, price($price) - saleprice($saleprice)\n";
+    			}
     			$scrapped_attributes[$simple_object->Size]=array(
-    										"price"=>$this->removeDollarSign($original_price),
-    										"saleprice"=>$this->removeDollarSign($simple_object->Price)
+    										"price"=>$price,
+    										"saleprice"=>$saleprice
     										);
     		}
     	}

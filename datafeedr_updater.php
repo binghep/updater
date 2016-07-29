@@ -423,7 +423,7 @@ class datafeedr_updater{
 			if ($scrapped_attributes!==false){
 		   	 	return $scrapped_attributes;
 			}else{
-				echo "\n---Abort this product's scrapped data. In scrape_attributes() function: getScrappedAttributes() returned false (e.g. this product's scrapped data has no size info, meaning the product has color option only)---\n";
+				echo "\n---Abort this product's scrapped data. In scrape_attributes() function: getScrappedAttributes() returned false (Reason 1: this product's scrapped data has no size info, meaning the product has color option only. Reason 2: product not avaiable)---\n";
 				return false;
 			}
 		}

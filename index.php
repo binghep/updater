@@ -14,8 +14,9 @@ require __DIR__.'/config.php';
 require __DIR__.'/database/dbcontroller.php';
 $db_handle=new DBController();	
 
-// $_GET['category_id']=462;
-// $_GET['category_id']=697;//baby clothing
+// $_GET['category_id']=662;//women->top
+// $_GET['category_id']=697;//kids->baby clothing
+// $_GET['category_id']=672;//women->sweaters
 // $_GET['category_id']=844;//bags & wallets
 
 // $category_id=702;
