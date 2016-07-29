@@ -15,7 +15,8 @@ require __DIR__.'/database/dbcontroller.php';
 $db_handle=new DBController();	
 
 // $_GET['category_id']=462;
-// $_GET['category_id']=846;
+// $_GET['category_id']=697;//baby clothing
+$_GET['category_id']=844;//bags & wallets
 
 // $category_id=702;
 // $this_event_id=do_one_category_only($category_id,$db_handle);
@@ -165,9 +166,19 @@ On error, return false.
 If debug is not turned off, return null.
 */
 function do_one_category_only($cat_id,$db_handle,$report_name){
+	//-------------truncate to be disabled table---------
+	$query="truncate mage_products_action;";
+	$result=$db_handle->runQuery($query);
+	if ($result===false){
+		echo "\nTruncate mage_products_action failed\n";
+	}else{
+		echo "\nSuccess: Truncate mage_products_action. \n";
+	}
+	//---------------------------------------------------
 	var_dump($cat_id);
 	// write_report("------------Start Running category ".$cat_id."--------------",$report_name);
 	require __DIR__.'/config.php';
+
 	// var_dump($weight);
 	require_once __DIR__.'/datafeedr_updater.php';
 	//----------------sanitize the cat_id, make sure it is allowed-----------------
@@ -217,23 +228,39 @@ function do_one_category_only($cat_id,$db_handle,$report_name){
 	//--------------record skus that should be deleted later on in mage_products_action table---------------
 	$curr_skus=$datafeedr_updater->getCurrProductSkus();//skus from all visible products in category
 	echo "\nNumber of Current visible and enabled skus: ",count($curr_skus),"\n";
-
+	var_dump($curr_skus);
 	$action_table="mage_products_action";
 	
 	$msg="inserting skus (to be deleted) to action_table for this event";
 	echo "\n$msg\n";
 	$count_inserted=0;
 	// $skus_to_disable=array();
+	//------set table to check based on whether the curr category is simple or configurable category------
+	require __DIR__.'/config.php';
+	
+	$table_to_check="";
+	if (in_array($cat_id, $simple_products_categories)){
+		$table_to_check=$mysql_table_step_1_datafeedr_results;	
+	}else{
+		$table_to_check=$mysql_table_step_2_scrapped_results;	
+	}
+	// var_dump($simple_products_categories);
+	// var_dump(in_array($cat_id, $simple_products_categories));
+	// var_dump($mysql_table_step_2_scrapped_results);
+	echo ("checking current visible enabled skus in cat_id ($cat_id) against this table:　$table_to_check\n");
+	//-----record obsolete sku by finding current enabled visible sku but not in step1 or step2 table-----
 	foreach ($curr_skus as $curr_sku) {
 		//if $curr_sku does not exist in step 2 table sku column, then obsolete:
-		$query="select sku from {$mysql_table_step_1_datafeedr_results} where sku='{$curr_sku}'";	
+		$query="select sku from {$table_to_check} where sku='{$curr_sku}'";	;
+		
 		// var_dump($query);
 		$result=$db_handle->runQuery($query);
 		// var_dump($result);
 		if (!is_null($result)){//still exist in datafeedr
-			echo 'continue';
+			// echo 'continue';
 			continue;
 		}
+		echo ("obselete:$curr_sku\n");
 		// echo 'truncating mage_products_to_be_deleted;';
 		$query="insert into {$action_table} (sku,category_id,disabled,deleted,auto_update_event_id,action) values ('{$curr_sku}','{$cat_id}',0,0,'{$this_event_id}','TO_BE_DELETED')";
 		// var_dump($query);
