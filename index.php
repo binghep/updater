@@ -167,12 +167,16 @@ If debug is not turned off, return null.
 */
 function do_one_category_only($cat_id,$db_handle,$report_name){
 	//-------------truncate to be disabled table---------
-	$query="truncate mage_products_action;";
-	$result=$db_handle->runQuery($query);
-	if ($result===false){
-		echo "\nTruncate mage_products_action failed\n";
-	}else{
-		echo "\nSuccess: Truncate mage_products_action. \n";
+	echo "do one category only? ";
+	var_dump(isset($_GET['category_id']));
+	if (isset($_GET['category_id'])){
+		$query="truncate mage_products_action;";
+		$result=$db_handle->runQuery($query);
+		if ($result===false){
+			echo "\nTruncate mage_products_action failed\n";
+		}else{
+			echo "\nSuccess: Truncate mage_products_action. \n";
+		}
 	}
 	//---------------------------------------------------
 	var_dump($cat_id);

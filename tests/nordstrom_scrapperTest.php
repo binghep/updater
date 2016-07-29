@@ -25,31 +25,33 @@ class nordstrom_scrapperTest extends PHPUnit_Framework_TestCase{
 
 	
 	// public function testBothColorAndSizeOption(){
-	// 	$url="http://shop.nordstrom.com/S/3977168?cm_mmc=Linkshare-_-datafeed-_-plus_women:bottoms:pant-_-1063136";
+	// 	$url="http://shop.nordstrom.com/s/niczoe-lotus-long-sleeve-top-regular-petite/4332555?cm_mmc=Linkshare-_-datafeed-_-Women%3ATops%3ASweater-_-5152873";
 	// 	$a=new nordstrom_scrapper($url);
 	// 	// if ($a->init_status===false){
 	// 	// 	echo("cannot instantiate scrapper");
 	// 	// }
 	// 	$this->assertNotFalse($a->init_status);
-
+	// 	return;
 	// 	$conf_sku="test";
 	// 	$scrapped_attributes=$a->getScrappedAttributes($conf_sku);
+	// 	var_dump($scrapped_attributes);
 	// 	$this->assertNotFalse($scrapped_attributes);//if empty will become false. so this already implies it is not empty
 	// }
-	public function testBothColorAndSizeOption(){
-		$url="http://shop.nordstrom.com/s/niczoe-lotus-long-sleeve-top-regular-petite/4332555?cm_mmc=Linkshare-_-datafeed-_-Women%3ATops%3ASweater-_-5152873";
+	
+
+	public function testBothColorAndSizeOption2(){
+		$url="http://shop.nordstrom.com/s/lush-strappy-long-sleeve-woven-blouse/4344299?cm_mmc=Linkshare-_-datafeed-_-Women%3ATops%3ABlouse_Top-_-5162132";
 		$a=new nordstrom_scrapper($url);
 		// if ($a->init_status===false){
 		// 	echo("cannot instantiate scrapper");
 		// }
 		$this->assertNotFalse($a->init_status);
-		return;
+		// return;
 		$conf_sku="test";
 		$scrapped_attributes=$a->getScrappedAttributes($conf_sku);
 		var_dump($scrapped_attributes);
 		$this->assertNotFalse($scrapped_attributes);//if empty will become false. so this already implies it is not empty
 	}
-
 
 	public function testOutOfStockOption(){
 		$url="http://shop.nordstrom.com/S/4237966?cm_mmc=Linkshare-_-datafeed-_-women:bottoms:pant-_-5084034";
@@ -66,9 +68,9 @@ class nordstrom_scrapperTest extends PHPUnit_Framework_TestCase{
 
 
 
-	public function testFour(){
+	// public function testFour(){
 		
-	}
+	// }
 }
 ?>
 
