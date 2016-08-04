@@ -39,7 +39,9 @@ class datafeedr_api{
 		$this->db_handle=new DBController();
 		// var_dump("here");
 		// require '/usr/share/nginx/www/ems.1661hk.com/wp-content/plugins/datafeedr-api/libraries/datafeedr.php';
-		require '/usr/share/nginx/www/ipzmall.com/wp/wp-content/plugins/datafeedr-api/libraries/datafeedr.php';
+
+		// require '/usr/share/nginx/www/ipzmall.com/wp/wp-content/plugins/datafeedr-api/libraries/datafeedr.php';
+		require '/usr/share/nginx/www/ipzmall.com/alice/datafeedr_updater/lib/datafeedr-api/libraries/datafeedr.php';
 		$this->DatafeedrApi=new DatafeedrApi( $datafeedr_id, $datafeedr_key );
 		
 	}

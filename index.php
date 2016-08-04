@@ -17,7 +17,7 @@ $db_handle=new DBController();
 // $_GET['category_id']=662;//women->top
 // $_GET['category_id']=697;//kids->baby clothing
 // $_GET['category_id']=672;//women->sweaters
-// $_GET['category_id']=844;//bags & wallets
+// $_GET['category_id']=844;//headphone
 
 // $category_id=702;
 // $this_event_id=do_one_category_only($category_id,$db_handle);
