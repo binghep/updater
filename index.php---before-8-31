@@ -9,21 +9,26 @@
 responsible for generating csv and updating all categories. 
 */
 
-// $_GET['category_id']=537;
-require 'config.php';
-require 'database/dbcontroller.php';
+
+require __DIR__.'/config.php';
+require __DIR__.'/database/dbcontroller.php';
 $db_handle=new DBController();	
+
+// $_GET['category_id']=662;//women->top
+// $_GET['category_id']=697;//kids->baby clothing
+// $_GET['category_id']=672;//women->sweaters
+// $_GET['category_id']=844;//headphone
 
 // $category_id=702;
 // $this_event_id=do_one_category_only($category_id,$db_handle);
-// $this_event_id=61;
-// disable_obsolete_products_and_reindex($this_event_id,$db_handle);
+
+// disable_obsolete_products_and_reindex($db_handle,"lala");
 // return;
 
 $do_one_category_only=(isset($_GET['category_id'])&&is_numeric($_GET['category_id']))?$_GET['category_id']:null;
 
 	date_default_timezone_set('America/Los_Angeles');
-    $tdate = date("m-d-Y");
+    $tdate = date("Y-m-d");//cannot have H:i because this function returns different H:i for different categories. also called in datafeedr_updater to set the $report variable.
     $file_name="report/".$tdate.'.html';
 
 if (!is_null($do_one_category_only)){
@@ -43,18 +48,43 @@ if (!is_null($do_one_category_only)){
 		}else{
 			echo "\nFail: fail to change product position.\n";
 		}
+			write_report("<div>(clean up step 1) Finished step 1.</div>",$file_name);
 		//-----------------(2)-----------------------
 		fill_clearance_percent_off();
+		fill_denim_type();
+		add_4_products_to_cat_854();//"Popular" category.
+			write_report("<div>(clean up step 2) Finished step 2.</div>",$file_name);
 		//-----------------(3)-----------------------
 		disable_obsolete_products_and_reindex($db_handle,$file_name);
+			write_report("<div>(clean up step 3) Finished Re-indexing All.</div>",$file_name);
 		//-----------------(4)-----------------------
 		delete_all_disabled_datafeedr_product();
-		echo "\nDone\nThanks for reading, my task is finished, pls check. Bye\n";
+			write_report("<div>(clean up step 4) Finished Deleting All obsolete products and their children.</div>",$file_name);
+		//-----------------(5)-----------------------
+		remove_old_csv();
+		$msg="Thanks for reading. My task is finished. Bye";
+		echo "\n$msg\n";
+			write_report("<div style='font-weight:bold;'>$msg</div>",$file_name);
 	}else{
-		echo "\ngo_over_all() function returned false, error somewhere, so I did not call disable_obsolete_products_and_reindex() function to remove obsolete products in all categories\n";
+		$msg="\ngo_over_all() function returned false, error somewhere, so I did not call functions in clean up steps (1)(2)(3)(4). Bye.\n";
+		echo $msg;
+			write_report("<div>$msg</div>",$file_name);
 	}
+	send_report_via_email($file_name);
 }
 
+function remove_old_csv(){
+	include __DIR__."/lib/remove_old_csv_files.php";
+}
+function send_report_via_email($file_name){
+	require '/usr/share/nginx/www/ipzmall.com/alice/PHPMailer/PHPMailer-5.2.14/send_email_api.php';
+	$email_title="datafeedr_updater REPORT";
+	$email_body=file_get_contents($file_name);
+	$recipents=["pengx077@gmail.com","alice@1661hk.com"];
+	$send_email_api=new send_email_api($email_title,$email_body,$recipents);
+	$send_email_api->send();
+		
+}
 function curl($url) {
     $ch = curl_init();  // Initialising cURL
     curl_setopt($ch, CURLOPT_URL, $url);    // Setting cURL's URL option with the $url variable passed into the function
@@ -64,7 +94,7 @@ function curl($url) {
     return $data;   // Returning the data from the function
 }
 
-function write_log($object,$file_name)
+function write_report($object,$file_name)
 {  
 	// echo "$object<br>";
  	error_log("\n".$object."\n", 3, $file_name);
@@ -72,14 +102,58 @@ function write_log($object,$file_name)
 }
 function fill_clearance_percent_off(){
 	echo "\n---------Filling clearance percent off attribute of all products---------\n";
-	require 'lib/fill_clearance_percent_off.php';
+	require __DIR__.'/lib/fill_clearance_percent_off.php';
 	$thirty_off_option_id=1921;
 	$fourty_off_option_id=1922;
 	$fifty_off_option_id=1923;
 	$fill_fifty_percent_off=new fill_clearance_percent_off($thirty_off_option_id,$fourty_off_option_id,$fifty_off_option_id);
 	echo "\n-----------Done Filling clearance_percent_off attribute--------\n";
 }
-// write_log("\"admin,cn,en\",\"$sku\",\"-$small_image\"");
+function fill_denim_type(){
+	echo "\n---------Filling denim_type attribute---------\n";
+	require __DIR__.'/lib/fill_denim_type.php';
+	//--------------------------test case 1-----------------------------
+	$denim_type=array("straight"=>"1953",
+						"Skinny"=>"1952",
+						"Boyfriend"=>"1951",
+						"Bootcut"=>"1950",
+						"Flare"=>"1949",
+						"DISTRESSED"=>"1947"
+						);
+	$fill_denim_type=new fill_denim_type($denim_type);
+	echo "\n-----------Done Filling denim_type attribute--------\n";
+}
+/**
+* Add 4 products from Women->Dresses(cat_id: 462) to Popular category(854).
+*/
+function add_4_products_to_cat_854(){
+	require_once __DIR__.'/../../app/Mage.php';
+	Mage::app()->setCurrentStore(Mage_Core_Model_App::ADMIN_STORE_ID);
+	require __DIR__.'/lib/add_cat_to_products.php';
+	echo "\n=================Adding 4 Dresses to Popular Category=================\n";
+	//------------test case 1:pass 4 products to class constructor---------------
+	$cat_id_of_popular_category=854;//854 is cat id for "popular" category.
+	$cat_id_of_dresses_category=462;//854 is cat id for "popular" category.
+	$category = Mage::getModel('catalog/category')->load($cat_id_of_dresses_category);
+	$product_per_page=4;
+	$p=1;
+	$four_product_collection = Mage::getModel('catalog/product')
+			    ->getCollection()
+			    ->addCategoryFilter($category)
+			    // ->addAttributeToSelect("CategoryIds")
+			    ->addAttributeToFilter('status', array('eq' => 1)) //only enabled 
+			    ->addAttributeToFilter('visibility', 4) //only visible 
+			    ->setPageSize($product_per_page)
+				->setCurPage($p)
+			    ->load();
+	// foreach ($four_product_collection as $product) {
+	// 	echo $product->getSku(),"<br>";
+	// }
+	$add_cat_to_products=new add_cat_to_products($four_product_collection,$cat_id_of_popular_category);
+
+	echo "\n============Finished Adding 4 Dresses to Popular Category===========\n";
+}
+// write_report("\"admin,cn,en\",\"$sku\",\"-$small_image\"");
 
 
 // go_over_all($db_handle);
@@ -92,10 +166,26 @@ For skus not in datafeedr result anymore, insert them in mage_products_action ta
 On error, return false.
 If debug is not turned off, return null.
 */
-function do_one_category_only($cat_id,$db_handle,$log_name){
-	// write_log("------------Start Running category ".$cat_id."--------------",$log_name);
-	require 'config.php';
-	require_once 'datafeedr_updater.php';
+function do_one_category_only($cat_id,$db_handle,$report_name){
+	//-------------truncate to be disabled table---------
+	echo "do one category only? ";
+	var_dump(isset($_GET['category_id']));
+	if (isset($_GET['category_id'])){
+		$query="truncate mage_products_action;";
+		$result=$db_handle->runQuery($query);
+		if ($result===false){
+			echo "\nTruncate mage_products_action failed\n";
+		}else{
+			echo "\nSuccess: Truncate mage_products_action. \n";
+		}
+	}
+	//---------------------------------------------------
+	var_dump($cat_id);
+	// write_report("------------Start Running category ".$cat_id."--------------",$report_name);
+	require __DIR__.'/config.php';
+
+	// var_dump($weight);
+	require_once __DIR__.'/datafeedr_updater.php';
 	//----------------sanitize the cat_id, make sure it is allowed-----------------
 	$history_table="mage_datafeedr_auto_update_history";
 	$query="select * from {$history_table} where cat_id=".$cat_id;
@@ -129,7 +219,7 @@ function do_one_category_only($cat_id,$db_handle,$log_name){
 		$result=$db_handle->runQuery($query);
 		$this_event_id=$result[0]['id'];
 		// var_dump($this_event_id);
-		// write_log('$this_event_id is '.$this_event_id,$log_name);
+		// write_report('$this_event_id is '.$this_event_id,$report_name);
 		// return -1;
 	}else{
 		echo 'This is debug mode.<br>';
@@ -143,23 +233,39 @@ function do_one_category_only($cat_id,$db_handle,$log_name){
 	//--------------record skus that should be deleted later on in mage_products_action table---------------
 	$curr_skus=$datafeedr_updater->getCurrProductSkus();//skus from all visible products in category
 	echo "\nNumber of Current visible and enabled skus: ",count($curr_skus),"\n";
-
+	var_dump($curr_skus);
 	$action_table="mage_products_action";
 	
 	$msg="inserting skus (to be deleted) to action_table for this event";
 	echo "\n$msg\n";
 	$count_inserted=0;
 	// $skus_to_disable=array();
+	//------set table to check based on whether the curr category is simple or configurable category------
+	require __DIR__.'/config.php';
+	
+	$table_to_check="";
+	if (in_array($cat_id, $simple_products_categories)){
+		$table_to_check=$mysql_table_step_1_datafeedr_results;	
+	}else{
+		$table_to_check=$mysql_table_step_2_scrapped_results;	
+	}
+	// var_dump($simple_products_categories);
+	// var_dump(in_array($cat_id, $simple_products_categories));
+	// var_dump($mysql_table_step_2_scrapped_results);
+	echo ("checking current visible enabled skus in cat_id ($cat_id) against this table:　$table_to_check\n");
+	//-----record obsolete sku by finding current enabled visible sku but not in step1 or step2 table-----
 	foreach ($curr_skus as $curr_sku) {
 		//if $curr_sku does not exist in step 2 table sku column, then obsolete:
-		$query="select sku from {$mysql_table_step_1_datafeedr_results} where sku='{$curr_sku}'";	
+		$query="select sku from {$table_to_check} where sku='{$curr_sku}'";	;
+		
 		// var_dump($query);
 		$result=$db_handle->runQuery($query);
 		// var_dump($result);
 		if (!is_null($result)){//still exist in datafeedr
-			echo 'continue';
+			// echo 'continue';
 			continue;
 		}
+		echo ("obselete:$curr_sku\n");
 		// echo 'truncating mage_products_to_be_deleted;';
 		$query="insert into {$action_table} (sku,category_id,disabled,deleted,auto_update_event_id,action) values ('{$curr_sku}','{$cat_id}',0,0,'{$this_event_id}','TO_BE_DELETED')";
 		// var_dump($query);
@@ -172,11 +278,13 @@ function do_one_category_only($cat_id,$db_handle,$log_name){
 		}
 	}
 	echo "\nRecorded [",$count_inserted, "] obsolete visible products' skus in database(mage_products_action table). \n";
+	write_report("<td>".$count_inserted."</td>",$report_name);
 	//-------------step4.2: If no skus should be disabled, which means the datafeedr did not change product results for the category query. Log it.-----------
 	if ($count_inserted===0){
 		$msg="Step 6: No product to be disabled in this category (datafeedr returned same product set, but all products were updated in case there are changes in attributes).";
-		// write_log($msg,$file_name);
+		// write_report($msg,$file_name);
 		echo "\n$msg\n";
+		write_report("<td>No obsolete visible products.</td>",$report_name);
 	}
 	
 	//----------------------------finish and return-------------------------------------------------------
@@ -229,7 +337,7 @@ new_skus has:   HUR00PJ-DARHEAOBS-L
 //==========================regular, go through all datafeedr categories=============
 function go_over_all($db_handle,$file_name){
 	//================write report===============================================
-	write_log("<!DOCTYPE html>
+	write_report("<!DOCTYPE html>
 						<html>
 						<head>
 							<style>
@@ -243,7 +351,8 @@ function go_over_all($db_handle,$file_name){
 						</head>
 						<body>
 						<table>
-						<th>Date</th><th>Time</th><th>Old Visible Datafeedr Products</th><th>After Update</th><th>status</th>",$file_name);
+						<th>Date</th><th>Time</th><th>Cat Id</th><th>Cat Name</th><th># of Visible Datafeedr Products (before Update) </th><th>In Step 1 Table</th><th>In Step 2 Table</th><th>status</th><th>Num obsolete visible recorded in Database</th>",$file_name);
+	
 	//===========================================================================
 	echo "\n========================Step 1: GO OVER ALL=====================\n";
 	//-------------truncate to be disabled table---------
@@ -255,7 +364,7 @@ function go_over_all($db_handle,$file_name){
 		echo "\nSuccess: Truncate mage_products_action. \n";
 	}
 	//-------------------------------------------------------
-	require 'config.php';	
+	require __DIR__.'/config.php';	
 	$no_error=true;
 	foreach ($filter_strings as $cat_id => $strings) {
 		$cat_id=(int)$cat_id;
@@ -283,8 +392,8 @@ This function is called after go_over_all() function. This function is going to 
 */
 function disable_obsolete_products_and_reindex($db_handle,$file_name){
 	echo ("\n========================(2): DISABLE and REINDEX=====================\n");
-	require 'config.php';
-	require_once 'datafeedr_updater.php';
+	require __DIR__.'/config.php';
+	require_once __DIR__.'/datafeedr_updater.php';
 	//--------------set up a dummy category $datafeedr_updater---------------------------------
 	if ($debug===false){
 		$cat_id=849;//vitamins & supplements
@@ -321,7 +430,9 @@ function disable_obsolete_products_and_reindex($db_handle,$file_name){
 						}
 					}
 				}
-				echo "\n --------Using mage, now disabling ", count($ids_to_disable)," visible products and ", count($final_ids_to_disable)-count($ids_to_disable), " children(if any) of these products---------\n";
+				$msg="\n --------Using mage, now disabling ". count($ids_to_disable)." visible products and ".(count($final_ids_to_disable)-count($ids_to_disable)). " children(if any) of these products---------\n";
+				echo $msg;
+				// write_report(count($ids_to_disable)." visible items with ".count($final_ids_to_disable)-count($ids_to_disable)." invisible children items",$file_name);
 				echo "\n[",implode(",", $final_ids_to_disable),"]\n";
 
 				if (!empty($final_ids_to_disable)){//reindex might not be prompt! so need to use another
@@ -355,8 +466,9 @@ function disable_obsolete_products_and_reindex($db_handle,$file_name){
 * and run csv in magmi: pls_do_not_change_me_delete profile to delete them.
 */
 function delete_all_disabled_datafeedr_product(){
-	require_once 'lib/delete_all_disabled_datafeedr_products.php';
+	require_once __DIR__.'/lib/delete_all_disabled_datafeedr_products.php';
 	$deleter=new delete_all_disabled_datafeedr_products;
+	
 }
 /**
 * 
@@ -384,7 +496,7 @@ input: magento product id
 output: array containing all child product ids. if this product does not have child product. return false;
 */
 function get_child_ids($id){
-	require_once '../../app/Mage.php';
+	require_once __DIR__.'/../../app/Mage.php';
 	Mage::app()->setCurrentStore(Mage_Core_Model_App::ADMIN_STORE_ID);
 	$childProducts_ids = Mage::getModel('catalog/product_type_configurable')
                     ->getChildrenIds($id);
