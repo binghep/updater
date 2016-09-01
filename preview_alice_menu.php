@@ -29,7 +29,7 @@ Mage::app();
 
 $categories = Mage::getModel('catalog/category')->getCollection()
     ->addAttributeToSelect('*')//or you can just add some attributes
-    ->addAttributeToFilter('level', 2);//2 is actually the first level
+    ->addAttributeToFilter('level', 3);//3 is actually the first level
 if ($_SESSION['user']['login']!=="ddd"){
     $categories->addAttributeToFilter('is_active', 1);//if you want only active categories
 }else{

@@ -25,6 +25,8 @@ class datafeedr_api{
 	public $magento_categories='';
 	public $filter_strings='';
 	function __construct($magento_categories,$filter_strings,$debug=false) {
+		var_dump($magento_categories);
+		var_dump($filter_strings);
 		$this->magento_categories=$magento_categories;
 		$this->filter_strings=$filter_strings;
 		//default to debug=true if param is not boolean:
