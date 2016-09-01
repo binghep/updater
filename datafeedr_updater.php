@@ -141,9 +141,43 @@ class datafeedr_updater{
 	    return true;
 	}
 	/*
-	If cat is not 2nd or 3rd level, return false.
+	2nd Version: If cat is not 3rd or 4th level, return false.
+	Else save the 455,55 style ....
+	*/
+	public function init_all_ancestor_cat_ids($cat_id){
+		// require_once __DIR__.'/../../app/Mage.php';
+		// Mage::app()->setCurrentStore(Mage_Core_Model_App::ADMIN_STORE_ID);
+		
+		$category = new Mage_Catalog_Model_Category();
+		$category->load($cat_id);//414 
+		// echo ("cat id is".$cat_id);
+		if(!$category->getId()) {
+			return false;
+		}else{
+			$ancestor_cat_ids=array();
+			$cat_level=$category->getLevel();
+			if ($cat_level==3){
+				$this->ancestor_cat_ids=''.$category->getId();
+				return true;
+			}elseif ($cat_level==4){
+			// echo ("jdjfjd".$cat_level);
+				$cat_array=array();
+				array_push($cat_array,$category->getId());
+				array_push($cat_array,$category->getData('parent_id'));
+				$this->ancestor_cat_ids=implode(",", $cat_array);
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
+	}
+	/*
+	
+	Previous version: If cat is not 2nd or 3rd level, return false.
 	Else save the "455,55" style in $this->ancestor_cat_ids and return true.
 	*/
+	/*
 	public function init_all_ancestor_cat_ids($cat_id){
 		// require_once __DIR__.'/../../app/Mage.php';
 		// Mage::app()->setCurrentStore(Mage_Core_Model_App::ADMIN_STORE_ID);
@@ -173,7 +207,7 @@ class datafeedr_updater{
 				return false;
 			}
 		}
-	}
+	}*/
 
 	
 	// public function updateProductAttribute($productId,$attribute_code,$new_value){

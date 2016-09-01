@@ -264,9 +264,44 @@ class datafeedr_preview{
 	// }
 
 	/*
+	If cat is not 3nd or 4th level, return false.
+	Else save the "455,55" style in $this->ancestor_category_ids and return true.
+	*/
+	public function init_all_ancestor_category_ids($cat_id){
+		Mage::app()->setCurrentStore(Mage_Core_Model_App::ADMIN_STORE_ID);
+		
+		$category = new Mage_Catalog_Model_Category();
+		$category->load($cat_id);//414 
+		// echo ("cat id is".$cat_id);
+		if(!$category->getId()) {
+			return false;
+		}else{
+			// var_dump($category);
+			// var_dump($category->getLevel());
+			$ancestor_category_ids=array();
+			$cat_level=$category->getLevel();
+			if ($cat_level==3){
+				$this->ancestor_category_ids=''.$category->getId();
+				return true;
+			}elseif ($cat_level==4){
+			// echo ("jdjfjd".$cat_level);
+				$cat_array=array();
+				array_push($cat_array,$category->getId());
+				array_push($cat_array,$category->getData('parent_id'));
+				$this->ancestor_category_ids=implode(",", $cat_array);
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
+	}
+
+	/*
 	If cat is not 2nd or 3rd level, return false.
 	Else save the "455,55" style in $this->ancestor_category_ids and return true.
 	*/
+	/* 
 	public function init_all_ancestor_category_ids($cat_id){
 		Mage::app()->setCurrentStore(Mage_Core_Model_App::ADMIN_STORE_ID);
 		
@@ -296,7 +331,7 @@ class datafeedr_preview{
 			}
 		}
 	}
-
+	*/
 	function init_filter_strings(){
 		require 'config.php';
 		$strings=$filter_strings[''.$this->magento_category_id];
