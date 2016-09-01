@@ -1,4 +1,7 @@
 <?php
+// Usage:
+// http://www.ipzmall.com/alice/datafeedr_updater/lib/remove_unused_image.php
+// /usr/share/nginx/www/ipzmall.com/media/catalog/product# du -sh
 
 
 require_once __DIR__.'/../../../app/Mage.php';
@@ -9,10 +12,17 @@ require_once __DIR__.'/../config.php';
 require_once Mage::getBaseDir('lib').'/alice/dbcontroller.php';
 $db_handle=new DBController();
 
-//step1: insert all used image path to global_link_distribution.all_used_images table.
-// makeTable();
-//step2: go over all images under product image dir, if not in database, unlink:
-//iterateThroughImageFolder();
+if (truncateTable()){
+	//step1: insert all used image path to global_link_distribution.all_used_images table.
+	if (makeTable()){
+		//step2: go over all images under product image dir, if not in database, unlink:
+		iterateThroughImageFolder();
+	}else{
+		echo "Error: failed to makeTable()";
+	}
+}else{
+	echo "Error: failed to truncateTable()";
+}
 //==============finished running===================
 function makeTable(){
 	global $db_handle;
@@ -38,9 +48,13 @@ function makeTable(){
 			// var_dump($actual_image);
 			$query="select * from all_used_images where image_path='$actual_image'";
 			$result=$db_handle->runQuery($query);
+			// var_dump($result);
 			if (is_null($result)){
 				$result=insertToDatabase($actual_image);
-				if (!$result) echo 'insert failed.<br>';
+				if (!$result) {
+					echo 'insert failed.<br>';
+					return false;
+				}
 			}
 			//$full_path="/usr/share/nginx/www/awesomejiayi.space/media/catalog/product".$actual_image;
 			// var_dump(file_exists($full_path));
@@ -49,8 +63,10 @@ function makeTable(){
 			$imagePath=$product->getData('image');
 			if (!is_null($imagePath)&&!empty($imagePath) && $imagePath!=="no_selection") {
 				$result = insertToDatabase($imagePath);
-				if (!$result) echo 'insert failed.<br>';
-	//					var_dump($imagePath);
+				if (!$result) {
+					echo 'insert failed.<br>';
+					return false;
+				}
 			}
 		}
 		//------------------------------------------------------------------
@@ -58,6 +74,7 @@ function makeTable(){
 		$count++;
 	}
 	//-----------finished recording all downloaded images--------------
+	return true;
 }
 
 
@@ -125,8 +142,12 @@ function makeTable(){
 	}
 
 
-
-
+	function truncateTable(){
+		global $db_handle;
+		$query="delete from `all_used_images`";
+		$result=$db_handle->runQuery($query);
+		return $result;
+	}
 
 
 

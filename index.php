@@ -8,7 +8,7 @@
 /*
 responsible for generating csv and updating all categories. 
 */
-
+return;
 
 require __DIR__.'/config.php';
 require __DIR__.'/database/dbcontroller.php';

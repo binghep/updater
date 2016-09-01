@@ -273,6 +273,7 @@ class datafeedr_api{
 
 	function getBackcountryDirectUrl($product_url_raw)
 	{
+		// var_dump($product_url_raw);
 		$product_url=null;
 	    //If url= is found in stirng, then product url exists in the Raw Url
 	    if (strpos($product_url_raw, 'url=') !== false) {

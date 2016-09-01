@@ -77,7 +77,7 @@ $filter_strings["662"]=array(
 							);
 //sweaters:
 $filter_strings["672"]=array('merchant_id in 42681,29129',
-							'category LIKE Sweater',
+							'name LIKE Sweater',
 							'category LIKE Women',
 							// 'salediscount>29'
 							);
@@ -101,7 +101,7 @@ $filter_strings["496"]=array('merchant LIKE "Backcountry.com"',
 							);
 
 // Outerwears:
-$filter_strings["526"]=array('merchant_id in 42681,29129',
+$filter_strings["526"]=array('merchant_id in 42681,29129',//42681 is nordstrom
 							'category !LIKE Kayak',
 							'category !LIKE Sweaters',
 							'category LIKE Women',
@@ -109,7 +109,7 @@ $filter_strings["526"]=array('merchant_id in 42681,29129',
 							// 'salediscount>29'
 							);
 // Underwear & Baselayers : 
-$filter_strings["530"]=array('merchant_id in 42681',
+$filter_strings["530"]=array('merchant_id in 42681,29129',//29129 is commision junction's backcountry.com
 							// 'category LIKE Baselayers',
 							// 'category LIKE Clothing',
 							'category LIKE Women',
@@ -120,9 +120,9 @@ $filter_strings["530"]=array('merchant_id in 42681',
 							// 'salediscount>29'
 							);
 // Denim :
-$filter_strings["537"]=array('merchant_id in 42681',//29129
+$filter_strings["537"]=array('merchant_id in 42681,29129',//29129
 							'category LIKE Women',
-							'category LIKE Pant',
+							'category LIKE Pant|Pants',
 							'category !LIKE Tights',//backcountry tights
 							'name LIKE Jean',
 							// 'name LIKE straight',//39 results
@@ -193,7 +193,7 @@ $filter_strings["556"]=array('merchant_id in 42681,29129',
 							// 'salediscount>29'
 							);
 // Denim :
-$filter_strings["782"]=array('merchant_id in 42681',//remove backcountry. no people in image
+$filter_strings["782"]=array('merchant_id in 42681',//remove backcountry. no people in image(to ugly)
 							'category LIKE Men',
 							'category LIKE Pant',
 							'name LIKE Jean',

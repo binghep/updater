@@ -33,7 +33,9 @@ if (empty($category_id) || !isset($category_id)){
 	 * Require the Datafeedr Api Client Library.
 	 */
 	// require_once '/usr/share/nginx/www/ems.1661hk.com/wp-content/plugins/datafeedr-api/libraries/datafeedr.php';
-	require '/usr/share/nginx/www/ipzmall.com/wp/wp-content/plugins/datafeedr-api/libraries/datafeedr.php';
+	// require '/usr/share/nginx/www/ipzmall.com/wp/wp-content/plugins/datafeedr-api/libraries/datafeedr.php';
+	require '/usr/share/nginx/www/ipzmall.com/alice/datafeedr_updater/lib/datafeedr-api/libraries/datafeedr.php';
+
 	require_once '../../app/Mage.php';
 	// Mage::app()->setCurrentStore(Mage_Core_Model_App::ADMIN_STORE_ID);
 	Mage::app();
