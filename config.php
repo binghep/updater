@@ -22,11 +22,11 @@ $mysql_table_step_2_scrapped_results="step_2_scrapped_results";
 // $simple_products_categories=array(444,559,446,844,845,846,849,850);
 $simple_products_categories=array(446,844,845,846,849,850);
 //-------------production------------
-$max_num_products_needed=600;
-$num_products_per_page=50;
+// $max_num_products_needed=600;
+// $num_products_per_page=50;
 //-------------testing------------
-// $max_num_products_needed=1;
-// $num_products_per_page=2;
+$max_num_products_needed=100;
+$num_products_per_page=50;
 
 // $max_num_products_needed=20;
 // $num_products_per_page=10;
@@ -334,3 +334,374 @@ $filter_strings["850"]=array(
 // $filter_strings["851"]=array('merchant LIKE "Vitamin World"',
 							// 'name LIKE Chia'
 							// );
+
+
+
+
+
+
+// -----------------------Camp & Hike--------------------------------------
+
+
+//Camp & Hike->Backpacks:done
+$filter_strings["863"]=array(
+							// 'name LIKE Osprey',
+							'merchant_id in 29129',
+							'category LIKE "Backpacking Backpacks"',
+							);
+
+
+//Camp & Hike->tents:done
+$filter_strings["864"]=array(
+							
+							// 'name LIKE Osprey',
+							// 'name LIKE Pack',
+							// 'merchant_id in 29129',
+							// 'name LIKE "Big Agnes"',
+							'category LIKE "Tent"',
+							'category LIKE "Camp"',
+							'name LIKE "Tent"',
+							'name !LIKE "Footprint"',
+							'any !LIKE Cloth',
+							'merchant !LIKE "UnbeatableSale.com"',
+							'price > 5500',
+							);
+
+//Camp & Hike->sleeping back:done
+$filter_strings["865"]=array(
+							
+							// 'name LIKE Osprey',
+							// 'name LIKE Pack',
+							// 'merchant_id in 29129',
+							'merchant !LIKE "UnbeatableSale.com"',
+							'merchant !LIKE "Gearbest"',
+							'merchant !LIKE "Cabela"',
+							'merchant !LIKE "Slumberjack"', //no image
+							'merchant !LIKE "ABaby.com"',
+							'merchant !LIKE "KnifeCountryUSA.com"',
+							'merchant !LIKE "SwissOutpost and Swiss Knife Depot"',
+							'merchant !LIKE "ProBoardShop.com"',
+
+							'category !LIKE "Sacks"',
+							'category LIKE "sleeping bag"',
+							'name !LIKE Blankets',
+							'name !LIKE Trekker',
+							'name !LIKE Wildkin',
+							'category !LIKE "Blue Ridge Firearms"',
+							'price > 6500',
+							
+						
+							);
+
+
+
+
+
+
+
+//Camp & Hike->pads & Hammocks: done
+$filter_strings["866"]=array(
+							// 'merchant_id in 42681,29129',
+							'category LIKE Camp',
+							'category LIKE Pads|Hammocks',
+							'name LIKE Pad|Hammocks',
+							'category !LIKE Kids',
+							'name !LIKE Hid',
+							'price > 5500',
+							// 'salediscount>29'
+							);
+// -----------------------Climb--------------------------------------
+
+//Climb->Climbing Shoes:done
+$filter_strings["868"]=array(
+							'merchant_id in 29129',//if want more than 347 products, can remove this restriction after adding more scrapper(<100 products per new scrapper).
+							'category LIKE Shoes',
+							'category !LIKE Kids',
+							'name LIKE Climbing Shoes',
+							// 'name LIKE Bag|Tote|Wallet',
+							'price > 4500',
+							// 'salediscount>29'
+							);
+
+
+//Climb->Climbing Harness:done
+$filter_strings["869"]=array(
+							// 'merchant_id in 42681,29129',
+							'category LIKE "Climbing Harness"',
+							'name !LIKE Pants',
+							'category !LIKE Kids',
+							'price > 4500',
+							// 'salediscount>29'
+							);
+
+
+//Cycle->Bikes:done
+$filter_strings["871"]=array(
+							// 'merchant_id in 42681,29129',
+							'category LIKE "Bike"',
+							'category !LIKE Accessories',
+							'category !LIKE Clothing',
+							'category LIKE Complete',
+							'category !LIKE Kids',
+							'merchant_id in 29129',//only backcountry.com has complete bikes category
+							'price > 27000',
+							// 'salediscount>29'
+							);
+
+//Cycle->Bike Helmets:done
+$filter_strings["872"]=array(
+							// 'merchant_id in 42681,29129',
+							'merchant_id in 29129',
+							'category LIKE "Bike Helmets"',
+							// 'category LIKE Pads|Hammocks',
+							'name LIKE Helmet',
+							'category !LIKE Kids',
+							// 'price > 27000',
+							// 'salediscount>29'
+							);
+//Cycle->Cycling Clothing:done //just no shoes //must be backcountry because clothing has size
+$filter_strings["873"]=array(
+							// 'merchant_id in 42681,29129',
+							// 'merchant LIKE "Competitive Cyclist"', //since this one has same products as backcountry.com
+							'merchant_id in 29129', //backcountry.com has 9000 products and not as good as above. can be a 2nd choice when 1st choice was gone.
+							'category LIKE Cycling|Bike|Cycle|Bycicle',
+							'category LIKE Clothing',
+							'category !LIKE Kids',
+							'category !LIKE Shoes',		
+							'category !LIKE Accessories',					 
+							'name !LIKE Shoe',							 
+							'name !LIKE Booties',							 
+							'price > 3800',
+							// 'salediscount>29'
+							);
+//Cycle->Cycling Shoes:done //must be backcountry because shoes have size
+$filter_strings["874"]=array(
+							// 'merchant_id in 42681,29129',
+							// 'merchant LIKE "Competitive Cyclist"', //since this one has same products as backcountry.com
+							'merchant_id in 29129', //backcountry.com has 9000 products and not as good as above. can be a 2nd choice when 1st choice was gone.
+							'category LIKE Cycling|Bike|Cycle|Bycicle',
+							'category LIKE Shoes',
+							'category !LIKE Kids',
+							'category !LIKE Covers',							
+							'price > 3800',
+							// 'salediscount>29'
+							);
+// -----------------------------Run------------------------------------
+//Run->Men's Running Clothing: 
+$filter_strings["876"]=array(
+							// 'merchant_id in 42681,29129',
+							'merchant_id in 29129',
+							'category LIKE Men',
+							'category LIKE Performance',
+							'category !LIKE Nutrition',							 							
+							'price > 1500',
+							// 'salediscount>29'
+							);
+//Run->Men's Running Shoes: 
+$filter_strings["877"]=array(
+							// 'merchant_id in 42681,29129',
+							'merchant_id in 29129', 
+							'category LIKE Run',
+							'category LIKE Men',
+							// 'category LIKE Clothing',							
+							'category LIKE Shoes',
+							'category !LIKE Snowshoes',
+							'price > 3800',
+							// 'salediscount>29'
+							);
+
+//Run->Women's Running Clothing: 
+$filter_strings["878"]=array(
+							// 'merchant_id in 42681,29129',
+							'merchant_id in 29129', 
+							'category LIKE Women',
+							'category LIKE Performance',
+							'category !LIKE Nutrition',	
+
+							'category !LIKE Bras',
+							'category !LIKE Footwear',
+							'name !LIKE Bra',
+
+							'price > 1500',
+							// 'salediscount>29'
+							);
+//Run->Women's Running Shoes: 
+$filter_strings["879"]=array(
+							// 'merchant_id in 42681,29129',
+							'merchant_id in 29129', 
+							'category LIKE Run',
+							'category LIKE Women',
+							// 'category LIKE Clothing',							
+							'category LIKE Shoes',
+							'category !LIKE Snowshoes',
+							'price > 3800',
+							// 'salediscount>29'
+							);
+
+//------------------------------snow-------------------------------------
+//Snow->Downhill Skiing
+$filter_strings["881"]=array(
+							'merchant_id in 29129', 
+							'category LIKE Ski',
+							// 'category LIKE Women',
+							'category LIKE Clothing',							
+							'category !LIKE Shoes',
+							'category !LIKE Hats',
+							'category !LIKE Kids',
+							'category !LIKE Toddler',
+							// 'category !LIKE Base Layers',
+							'category !LIKE Helmet',
+							'category !LIKE Gloves',
+							'price > 3800',
+							// 'salediscount>29'
+							);
+//Snow->Downhill Ski Clothing
+$filter_strings["881"]=array(
+							'merchant_id in 29129', 
+							'category LIKE Ski',
+							// 'category LIKE Women',
+							'category LIKE Clothing',							
+							'category !LIKE Shoes',
+							'category !LIKE Hats',
+							'category !LIKE Kids',
+							'category !LIKE Toddler',
+							// 'category !LIKE Base Layers',
+							'category !LIKE Helmet',
+							'category !LIKE Gloves',
+							'price > 3800',
+							// 'salediscount>29'
+							);
+//Snow->Snowboard Clothing
+$filter_strings["882"]=array(
+							'merchant_id in 29129', 
+							'category LIKE Snowboard',
+							// 'category LIKE Women',
+							'category LIKE Clothing',							
+							'category !LIKE Shoes',
+							'category !LIKE Hats',
+							'category !LIKE Kids',
+							'category !LIKE Toddler',
+							// 'category !LIKE Base Layers',
+							'category !LIKE Helmet',
+							'category !LIKE Gloves',
+							'price > 3800',
+							// 'salediscount>29'
+							);
+//---------------------------Travel---------------------------
+//Travel->Luggage:884
+$filter_strings["884"]=array(
+							// 'merchant_id in 29129', 
+							'category LIKE Luggage',
+							'category !LIKE Accessories',
+							'category !LIKE Carry',//carry on luggage
+							'category !LIKE Suitcases',
+							'category !LIKE Sets',
+
+							'name !LIKE Suitcase',
+							'name !LIKE Set',
+							// 'name !LIKE Wildkin',//look too girlish
+							'name !LIKE Carry-On',
+							'name LIKE Luggage|Duffel',
+
+							'merchant !LIKE UnbeatableSale.com',//some looks cheap although is not cheap
+							'merchant !LIKE OpenSky',
+							'merchant !LIKE Shoebuy.com', //not look like sport luggage. look like work luggage/alice's luggage
+							'merchant !LIKE Boscov',//Boscov's Department Stores: image not clear
+							'price > 6000',
+							// 'salediscount>29'
+							);
+//Travel->Day Bags:(actually day packs)
+$filter_strings["885"]=array(
+							// 'merchant_id in 29129', 
+							'category LIKE Daypack',
+							'category !LIKE Slings',
+							'category !LIKE School',
+
+							// 'name LIKE Daypack',
+
+							// 'merchant !LIKE UnbeatableSale.com',//some looks cheap although is not cheap
+							// 'merchant !LIKE OpenSky',
+							// 'merchant !LIKE Shoebuy.com', //not look like sport luggage. look like work luggage/alice's luggage
+							// 'merchant !LIKE Boscov',//Boscov's Department Stores: image not clear
+							// 'price > 6000',
+							// 'salediscount>29'
+							);
+
+//Travel->Car Racks:
+$filter_strings["886"]=array(
+							// 'merchant_id in 29129', 
+							'category LIKE Car',
+							'category LIKE Racks',
+							// 'category !LIKE School',
+
+							'name like Yakima|Thule',
+							// 'name LIKE Daypack',
+
+							'merchant !LIKE REI.com',//image not available
+							// 'merchant !LIKE OpenSky',
+							// 'merchant !LIKE Shoebuy.com', //not look like sport luggage. look like work luggage/alice's luggage
+							// 'merchant !LIKE Boscov',//Boscov's Department Stores: image not clear
+							'price > 7000',
+							// 'salediscount>29'
+							);
+
+//---------------------------Yoga---------------------------
+//Yoga->Women's Yoga Clothing: 
+$filter_strings["888"]=array(
+							'merchant_id in 29129', 
+							'category LIKE Women',
+							'name LIKE Yoga',
+							'category !LIKE Bras',
+							// 'category !LIKE Footwear',
+
+							'price > 1500',
+							// 'salediscount>29'
+							);
+//Yoga->Men's Yoga Clothing: //is actually t-shirt, cannot find keyword for not tight pants
+$filter_strings["889"]=array(
+							'merchant_id in 42681,29129',
+							// 'merchant_id in 29129,4', 
+							'category LIKE Men',
+							// 'category LIKE Casual',
+							// 'category LIKE ',
+							'name LIKE T-Shirt|Hoodie',
+							// 'name LIKE prAna',
+							// 'name LIKE Shirt|Shorts|Top|Jacket|Pant|Pants|Hoodie',
+							'price > 2500',
+							// 'salediscount>29'
+							);
+
+//Yoga->Yoga Gear: 
+$filter_strings["890"]=array(
+							// 'merchant_id in 42681,29129',
+							// 'merchant_id in 29129,4', 
+							'category LIKE Yoga',
+							'category LIKE Accessories',
+							'merchant !LIKE OpenSky',
+							// 'name LIKE prAna',
+							// 'name LIKE Shirt|Shorts|Top|Jacket|Pant|Pants|Hoodie',
+							'price > 500',
+							// 'salediscount>29'
+							);
+
+
+
+
+
+// //for testing
+// $filter_strings["850"]=array(
+// 							// 'merchant_id in 42681,29129',
+// 							'category LIKE "Bike"',
+// 							// 'category LIKE Pads|Hammocks',
+// 							'name LIKE Bike',
+							
+							
+// 							// 'category LIKE Women|Men',
+
+// 							// 'category LIKE Clothing',
+// 							'category !LIKE Kids',
+// 							// 'name LIKE Climbing Harness',
+// 							// 'name LIKE Bag|Tote|Wallet',
+// 							'price > 27000',
+// 							// 'salediscount>29'
+// 							);

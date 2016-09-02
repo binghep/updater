@@ -79,12 +79,12 @@ class datafeedr_preview{
 			return false;//failed 
 		}
 		//=====================get additional filter strings==================
-		$result=$this->init_additional_filter_strings();
-		if ($result===false){
-			return false;//failed 
-		}else{
+		// $result=$this->init_additional_filter_strings();
+		// if ($result===false){
+			// return false;//failed 
+		// }else{
 			return true;
-		}
+		// }
 	}
 	function echoWelcomeMsg(){
 		echo "<br>Hi, Sam, you are previewing category: ",$this->magento_category_name,"<br><br>";
