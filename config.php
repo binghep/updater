@@ -20,13 +20,15 @@ $mysql_table_step_2_scrapped_results="step_2_scrapped_results";
 
 
 // $simple_products_categories=array(444,559,446,844,845,846,849,850);
-$simple_products_categories=array(446,844,845,846,849,850);
+$simple_products_categories=array(446,844,845,846,849,850,863,864,866,869,871,872,884,885,886,890);
+// $ommit_categeries=array(446,844,845,846,849,850);
+$ommit_cat_threshold=850; //if cat id < 850, ommit
 //-------------production------------
 // $max_num_products_needed=600;
 // $num_products_per_page=50;
 //-------------testing------------
-$max_num_products_needed=100;
-$num_products_per_page=50;
+$max_num_products_needed=500;//1,000 API requests/month   100 products/request
+$num_products_per_page=100;
 
 // $max_num_products_needed=20;
 // $num_products_per_page=10;
@@ -356,7 +358,7 @@ $filter_strings["864"]=array(
 							
 							// 'name LIKE Osprey',
 							// 'name LIKE Pack',
-							// 'merchant_id in 29129',
+							'merchant_id in 29129', //remove it get more products,but other merchants might not have link in datafeedr
 							// 'name LIKE "Big Agnes"',
 							'category LIKE "Tent"',
 							'category LIKE "Camp"',
@@ -372,15 +374,15 @@ $filter_strings["865"]=array(
 							
 							// 'name LIKE Osprey',
 							// 'name LIKE Pack',
-							// 'merchant_id in 29129',
-							'merchant !LIKE "UnbeatableSale.com"',
-							'merchant !LIKE "Gearbest"',
-							'merchant !LIKE "Cabela"',
-							'merchant !LIKE "Slumberjack"', //no image
-							'merchant !LIKE "ABaby.com"',
-							'merchant !LIKE "KnifeCountryUSA.com"',
-							'merchant !LIKE "SwissOutpost and Swiss Knife Depot"',
-							'merchant !LIKE "ProBoardShop.com"',
+							'merchant_id in 29129',//remove it get better products, but no affiliate link or scrapper to scrape size.
+							// 'merchant !LIKE "UnbeatableSale.com"',
+							// 'merchant !LIKE "Gearbest"',
+							// 'merchant !LIKE "Cabela"',
+							// 'merchant !LIKE "Slumberjack"', //no image
+							// 'merchant !LIKE "ABaby.com"',
+							// 'merchant !LIKE "KnifeCountryUSA.com"',
+							// 'merchant !LIKE "SwissOutpost and Swiss Knife Depot"',
+							// 'merchant !LIKE "ProBoardShop.com"',
 
 							'category !LIKE "Sacks"',
 							'category LIKE "sleeping bag"',
@@ -399,7 +401,7 @@ $filter_strings["865"]=array(
 
 
 
-//Camp & Hike->pads & Hammocks: done
+//Camp & Hike->pads & Hammocks: done  -- might not have affiliate link
 $filter_strings["866"]=array(
 							// 'merchant_id in 42681,29129',
 							'category LIKE Camp',

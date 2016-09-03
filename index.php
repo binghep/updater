@@ -39,6 +39,7 @@ if (!is_null($do_one_category_only)){
 	$result=go_over_all($db_handle,$file_name);
 	if ($result) {
 		echo "\ngo_over_all() function returned true, so calling last 2 steps to: (1) change all datafeedr product position. (2) disable obsolete products in all categories (3) generate give_magmi_to_delete.csv for all disabled datafeedr products \n";
+		return;
 		echo "\n========================(1) Changing all datafeedr product position to 300========================\n";
 		//---------------(1) change all datafeedr product position-----------------
 		$change_position_url="http://www.ipzmall.com/alice/datafeedr_updater/update_position_datafeedr_products_in_category.php";
@@ -188,13 +189,13 @@ function do_one_category_only($cat_id,$db_handle,$report_name){
 	require_once __DIR__.'/datafeedr_updater.php';
 	//----------------sanitize the cat_id, make sure it is allowed-----------------
 	$history_table="mage_datafeedr_auto_update_history";
-	$query="select * from {$history_table} where cat_id=".$cat_id;
+	/*$query="select * from {$history_table} where cat_id=".$cat_id;
 	$result=$db_handle->runQuery($query);
 	// var_dump($result);
 	if (is_null($result)){
 		echo 'category id not in database. exiting.';
 		return false;
-	}
+	}*/
 	//------------------------instantiate datafeedr object-------------------------
 	$datafeedr_updater=new datafeedr_updater($cat_id);
 	if ($datafeedr_updater===false){
@@ -367,6 +368,9 @@ function go_over_all($db_handle,$file_name){
 	require __DIR__.'/config.php';	
 	$no_error=true;
 	foreach ($filter_strings as $cat_id => $strings) {
+		if ($cat_id<=$ommit_cat_threshold){
+			continue;
+		}
 		$cat_id=(int)$cat_id;
 		$this_event_id=do_one_category_only($cat_id,$db_handle,$file_name);
 		// var_dump($this_event_id);
