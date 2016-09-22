@@ -24,12 +24,13 @@ class fill_clearance_percent_off{
 		//---------------------------------------------
 		$categories = Mage::getModel('catalog/category')->getCollection()
 		    ->addAttributeToSelect('*')//or you can just add some attributes
-		    ->addAttributeToFilter('level', 2);//2 is actually the first level
+		    ->addAttributeToFilter('level', 3);//2 is actually the first level
 		$categories->addAttributeToFilter('is_active', 1);//if you want only active categories
 		$i=0;
 		foreach ($categories as $category){
 			// echo "<span class='menu-level-2'>".$category->getName()."</span>";
 			$cat_id=$category->getId();
+			// if ($cat_id<850){continue;}
 			echo "\n----------running for cat_id: ",$cat_id,"(",$category->getName(),")","-----------\n";
 			// $name=getCategoryName($cat_id);
 			// echo "<td>".$name."</td>";
@@ -66,7 +67,7 @@ class fill_clearance_percent_off{
 		//-----------------------------------------
 		$ids_50_percent_off=array();
 		$ids_40_percent_off=array();
-		// $ids_30_percent_off=array();
+		$ids_30_percent_off=array();
 		foreach ($collection as $product) {
 			// echo $product->sku,"<br>";
 			$product_id=$product_model->getIdBySku($product->sku);
@@ -82,6 +83,8 @@ class fill_clearance_percent_off{
 				array_push($ids_50_percent_off, $product_id);
 			}else if ($this_product_discount>0.4){
 				array_push($ids_40_percent_off, $product_id);
+			}else if ($this_product_discount>0.3){
+				array_push($ids_30_percent_off, $product_id);
 			}
 		}
 		//-------------------------------------------
@@ -94,7 +97,11 @@ class fill_clearance_percent_off{
 		echo "Updated ",count($ids_40_percent_off), " visible enabled products \n";
 		Mage::getSingleton('catalog/product_action')->updateAttributes($ids_40_percent_off, array('clearance_percent_off' => $this->fourty_off_option_id), 0);
 		//-------------------------------------------
-
+		echo '-------setting following product ids to clearance_percent_off=30% (option id is ',$this->thirty_off_option_id,')------',PHP_EOL;
+		// var_dump($ids_40_percent_off);
+		echo "Updated ",count($ids_30_percent_off), " visible enabled products \n";
+		Mage::getSingleton('catalog/product_action')->updateAttributes($ids_30_percent_off, array('clearance_percent_off' => $this->thirty_off_option_id), 0);
+		//-------------------------------------------
 		//1666 is the option id. option label is "50%"
 		//1665 is option id for option label: "40%"
 		

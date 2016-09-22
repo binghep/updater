@@ -39,7 +39,7 @@ if (!is_null($do_one_category_only)){
 	$result=go_over_all($db_handle,$file_name);
 	if ($result) {
 		echo "\ngo_over_all() function returned true, so calling last 2 steps to: (1) change all datafeedr product position. (2) disable obsolete products in all categories (3) generate give_magmi_to_delete.csv for all disabled datafeedr products \n";
-		return;
+		// return;
 		echo "\n========================(1) Changing all datafeedr product position to 300========================\n";
 		//---------------(1) change all datafeedr product position-----------------
 		$change_position_url="http://www.ipzmall.com/alice/datafeedr_updater/update_position_datafeedr_products_in_category.php";
@@ -368,7 +368,8 @@ function go_over_all($db_handle,$file_name){
 	require __DIR__.'/config.php';	
 	$no_error=true;
 	foreach ($filter_strings as $cat_id => $strings) {
-		if ($cat_id<=$ommit_cat_threshold){
+		// if ($cat_id<=$ommit_cat_threshold){
+		if ($cat_id>$ommit_cat_threshold){
 			continue;
 		}
 		$cat_id=(int)$cat_id;

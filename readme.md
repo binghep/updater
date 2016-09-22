@@ -11,3 +11,13 @@ php5 server_path_to_magmi.cli.php -profile="pls_do_not_change_me_delete" -mode="
 To remove all added/tracked files and re-add:
 -----------------------------------------------
 git rm  -r --cached .
+
+
+
+
+
+
+
+You can use this to 
+update percentage_clearance_off
+http://xxx.xxx.xxx/alice/datafeedr_updater/fill_percent_off_action_alone.php
